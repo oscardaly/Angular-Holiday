@@ -132,7 +132,19 @@ BASE_URL = "/api/" + API_VERSION + "/posts"
 
 @app.route(BASE_URL, methods=["GET"])
 def get_all_posts():
-    return make_response(jsonify(posts), 200)
+    page_num, page_size = 1, 10
+    
+    if request.args.get('pn'):
+        page_num = int(request.args.get('pn'))
+    
+    if request.args.get('ps'):
+        page_size = int(request.args.get('ps'))
+    
+    page_start = (page_size * (page_num - 1))
+    list_of_posts = [ { k : v } for k, v in posts.items() ]
+    page_of_posts = list_of_posts[page_start:page_start + page_size]
+    
+    return make_response(jsonify( page_of_posts ), 200)
 
 
 @app.route(BASE_URL + "/<string:id>", methods=["GET"])
@@ -222,7 +234,19 @@ def delete_post(id):
 @app.route(BASE_URL + "/<string:id>/comments", methods=["GET"])
 def get_comments_on_post(id):
     if id in posts:
-        return make_response(jsonify(posts[id]["comments"]), 200)
+        page_num, page_size = 1, 10
+        
+        if request.args.get('pn'):
+            page_num = int(request.args.get('pn'))
+        
+        if request.args.get('ps'):
+            page_size = int(request.args.get('ps'))
+        
+        page_start = (page_size * (page_num - 1))
+        list_of_comments = [ { k : v } for k, v in posts[id]["comments"].items() ]
+        page_of_comments = list_of_comments[page_start:page_start + page_size]
+        
+        return make_response(jsonify( page_of_comments ), 200)
 
     else:
         return make_response(jsonify( { "error" : "Post not found" } ), 404)
