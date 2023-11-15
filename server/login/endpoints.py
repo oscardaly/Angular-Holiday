@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, make_response, request
+from flask import Blueprint, jsonify, make_response, request
 import jwt
 import datetime
-from ..app import app, BASE_URL
+
+login_blueprint = Blueprint('login', __name__)
 
 users =  {
     "user" : {
@@ -12,17 +13,17 @@ users =  {
     }
 }
 
-BASE_URL = BASE_URL + "/login"
+BASE_URL = "/api/v1.0/login"
 
 
-@app.route(BASE_URL, methods=['GET'])
+@login_blueprint.route(BASE_URL, methods=['GET'])
 def login():
     auth = request.authorization
     if auth and auth.password == 'password':
         token = jwt.encode({'user' : auth.username, 
                             'exp' : datetime.datetime.utcnow() + \
                                     datetime.timedelta(minutes=30)}, 
-                            app.config['SECRET_KEY'])
+                            'SECRET_KEY')
         return jsonify({'token' : token.decode('UTF-8')})
     
     else:

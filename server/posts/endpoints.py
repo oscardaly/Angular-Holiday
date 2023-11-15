@@ -1,14 +1,10 @@
-from http import server
-from flask import Flask, jsonify, make_response, request
+from flask import Blueprint, jsonify, make_response, request
+from login import utils
 import uuid
-import importlib.util
-import sys
 
-from ..app import app, BASE_URL
-from ..login import utils
+posts_blueprint = Blueprint('posts', __name__)
 
-
-BASE_URL = BASE_URL + "/posts"
+BASE_URL = "/api/v1.0/posts"
 
 posts = {
     "1" : {
@@ -134,7 +130,7 @@ posts = {
 }
 
 
-@app.route(BASE_URL, methods=["GET"])
+@posts_blueprint.route(BASE_URL, methods=["GET"])
 def get_all_posts():
     page_num, page_size = 1, 10
     
@@ -151,7 +147,7 @@ def get_all_posts():
     return make_response(jsonify( page_of_posts ), 200)
 
 
-@app.route(BASE_URL + "/<string:id>", methods=["GET"])
+@posts_blueprint.route(BASE_URL + "/<string:id>", methods=["GET"])
 def get_post(id):
     if id in posts:
         return make_response(jsonify(posts[id]), 200)
@@ -160,7 +156,7 @@ def get_post(id):
         return make_response(jsonify({ "error" : "Post not found" }), 404)
 
 
-@app.route(BASE_URL, methods=["POST"])
+@posts_blueprint.route(BASE_URL, methods=["POST"])
 @utils.check_for_jwt
 def add_post():
     try:
@@ -192,7 +188,7 @@ def add_post():
         return make_response(jsonify( { "error" : "Missing form data" } ), 404)
 
 
-@app.route(BASE_URL + "/<string:id>", methods=["PUT"])
+@posts_blueprint.route(BASE_URL + "/<string:id>", methods=["PUT"])
 @utils.check_for_jwt
 def edit_post(id):
     try:
@@ -227,7 +223,7 @@ def edit_post(id):
         return make_response(jsonify( { "error" : "Missing form data" } ), 404)
 
 
-@app.route(BASE_URL + "/<string:id>", methods=["DELETE"])
+@posts_blueprint.route(BASE_URL + "/<string:id>", methods=["DELETE"])
 @utils.check_for_jwt
 def delete_post(id):
     if id in posts:
@@ -238,7 +234,7 @@ def delete_post(id):
         return make_response(jsonify( { "error" : "Post not found" } ), 404)
     
 
-@app.route(BASE_URL + "/<string:id>/comments", methods=["GET"])
+@posts_blueprint.route(BASE_URL + "/<string:id>/comments", methods=["GET"])
 def get_comments_on_post(id):
     if id in posts:
         page_num, page_size = 1, 10
@@ -259,7 +255,7 @@ def get_comments_on_post(id):
         return make_response(jsonify( { "error" : "Post not found" } ), 404)
 
 
-@app.route(BASE_URL + "/<string:id>/comments", methods=["POST"])
+@posts_blueprint.route(BASE_URL + "/<string:id>/comments", methods=["POST"])
 @utils.check_for_jwt
 def add_new_comment_on_post(id):
     try:
@@ -279,7 +275,7 @@ def add_new_comment_on_post(id):
         return make_response(jsonify( { "error" : "Missing form data" } ), 404)
 
 
-@app.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["GET"])
+@posts_blueprint.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["GET"])
 def get_comment_by_id(post_id, comment_id):
     if post_id in posts:
         if comment_id in posts[post_id]["comments"]:
@@ -292,7 +288,7 @@ def get_comment_by_id(post_id, comment_id):
         return make_response(jsonify( { "error" : "Post not found" } ), 404)    
 
 
-@app.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["PUT"])
+@posts_blueprint.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["PUT"])
 @utils.check_for_jwt
 def edit_comment(post_id, comment_id):
     try:
@@ -313,7 +309,7 @@ def edit_comment(post_id, comment_id):
 
             
 
-@app.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["DELETE"])
+@posts_blueprint.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["DELETE"])
 @utils.check_for_jwt
 def delete_comment(post_id, comment_id):
     if post_id in posts:

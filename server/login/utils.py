@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 import jwt
 from functools import wraps
-from ..app import app
+# from app import app
 
 def check_for_jwt(function):
     @wraps(function)
@@ -15,7 +15,7 @@ def check_for_jwt(function):
             return jsonify({'message' : 'Token is missing'}), 401
             
         try:
-            data = jwt.decode(token, app.config["SECRET_KEY"])
+            data = jwt.decode(token, "SECRET_KEY")
         
         except:
             return jsonify({'message' : 'Token is invalid'}), 401

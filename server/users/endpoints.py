@@ -1,10 +1,12 @@
-from flask import Flask, jsonify, make_response, request
-from ..login.utils import check_for_jwt
-from ..app import app, BASE_URL
+from flask import Blueprint, jsonify, make_response, request
+from login.utils import check_for_jwt
+# from app import BASE_URL
 
-app.config['SECRET_KEY'] = 'mysecret'
+users_blueprint = Blueprint('users', __name__)
 
-BASE_URL = BASE_URL + "/users"
+# BASE_URL = BASE_URL + "/users"
+BASE_URL = "/api/v1.0/users"
+
 
 users =  {
     "user" : {
@@ -28,18 +30,18 @@ users =  {
 }
 
 
-@app.route("/api/v1.0/users", methods=["GET"])
+@users_blueprint.route(BASE_URL, methods=["GET"])
 def get_all_users():
     return make_response( jsonify( users ), 200 )
 
 
-@app.route(BASE_URL + "/<string:username>", methods=["GET"])
+@users_blueprint.route(BASE_URL + "/<string:username>", methods=["GET"])
 @check_for_jwt
 def get_user_by_username(username):
     return make_response( jsonify(  users[username] ), 200 )
 
 
-@app.route(BASE_URL, methods=["POST"])
+@users_blueprint.route(BASE_URL, methods=["POST"])
 def add_user():
         # check for same id/username in backend
         username = request.form["username"]
@@ -54,7 +56,7 @@ def add_user():
         return make_response( jsonify( { username : new_user } ), 201 )
 
 
-@app.route(BASE_URL + "/<string:username>", methods=["PUT"])
+@users_blueprint.route(BASE_URL + "/<string:username>", methods=["PUT"])
 @check_for_jwt
 def edit_user(username):
     users[username]["name"] = request.form["name"]
@@ -63,7 +65,7 @@ def edit_user(username):
     return make_response( jsonify( { username : users[username] } ), 200 )
 
 
-@app.route(BASE_URL + "/<string:username>", methods=["DELETE"])
+@users_blueprint.route(BASE_URL + "/<string:username>", methods=["DELETE"])
 @check_for_jwt
 def delete_user(username):
     del users[username]
