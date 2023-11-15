@@ -1,6 +1,10 @@
 from flask import Flask, jsonify, make_response, request
+from ..login.utils import check_for_jwt
+from ..app import app, BASE_URL
 
-app = Flask(__name__)
+app.config['SECRET_KEY'] = 'mysecret'
+
+BASE_URL = BASE_URL + "/users"
 
 users =  {
     "user" : {
@@ -23,17 +27,19 @@ users =  {
     }
 }
 
+
 @app.route("/api/v1.0/users", methods=["GET"])
 def get_all_users():
     return make_response( jsonify( users ), 200 )
 
 
-@app.route("/api/v1.0/users/<string:username>", methods=["GET"])
+@app.route(BASE_URL + "/<string:username>", methods=["GET"])
+@check_for_jwt
 def get_user_by_username(username):
     return make_response( jsonify(  users[username] ), 200 )
 
 
-@app.route("/api/v1.0/users", methods=["POST"])
+@app.route(BASE_URL, methods=["POST"])
 def add_user():
         # check for same id/username in backend
         username = request.form["username"]
@@ -48,7 +54,8 @@ def add_user():
         return make_response( jsonify( { username : new_user } ), 201 )
 
 
-@app.route("/api/v1.0/users/<string:username>", methods=["PUT"])
+@app.route(BASE_URL + "/<string:username>", methods=["PUT"])
+@check_for_jwt
 def edit_user(username):
     users[username]["name"] = request.form["name"]
     users[username]["password"] = request.form["password"]
@@ -56,11 +63,8 @@ def edit_user(username):
     return make_response( jsonify( { username : users[username] } ), 200 )
 
 
-@app.route("/api/v1.0/users/<string:username>", methods=["DELETE"])
+@app.route(BASE_URL + "/<string:username>", methods=["DELETE"])
+@check_for_jwt
 def delete_user(username):
     del users[username]
     return make_response( jsonify( {} ), 200)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)

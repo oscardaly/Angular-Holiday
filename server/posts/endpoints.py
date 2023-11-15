@@ -1,7 +1,14 @@
+from http import server
 from flask import Flask, jsonify, make_response, request
 import uuid
+import importlib.util
+import sys
 
-app = Flask(__name__)
+from ..app import app, BASE_URL
+from ..login import utils
+
+
+BASE_URL = BASE_URL + "/posts"
 
 posts = {
     "1" : {
@@ -126,9 +133,6 @@ posts = {
     }
 }
 
-API_VERSION = "v1.0"
-BASE_URL = "/api/" + API_VERSION + "/posts"
-
 
 @app.route(BASE_URL, methods=["GET"])
 def get_all_posts():
@@ -157,6 +161,7 @@ def get_post(id):
 
 
 @app.route(BASE_URL, methods=["POST"])
+@utils.check_for_jwt
 def add_post():
     try:
         post_id = str(uuid.uuid4())
@@ -188,6 +193,7 @@ def add_post():
 
 
 @app.route(BASE_URL + "/<string:id>", methods=["PUT"])
+@utils.check_for_jwt
 def edit_post(id):
     try:
         if id in posts:
@@ -222,6 +228,7 @@ def edit_post(id):
 
 
 @app.route(BASE_URL + "/<string:id>", methods=["DELETE"])
+@utils.check_for_jwt
 def delete_post(id):
     if id in posts:
         del posts[id]
@@ -253,6 +260,7 @@ def get_comments_on_post(id):
 
 
 @app.route(BASE_URL + "/<string:id>/comments", methods=["POST"])
+@utils.check_for_jwt
 def add_new_comment_on_post(id):
     try:
         if id in posts:
@@ -285,6 +293,7 @@ def get_comment_by_id(post_id, comment_id):
 
 
 @app.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["PUT"])
+@utils.check_for_jwt
 def edit_comment(post_id, comment_id):
     try:
         if post_id in posts:
@@ -305,6 +314,7 @@ def edit_comment(post_id, comment_id):
             
 
 @app.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["DELETE"])
+@utils.check_for_jwt
 def delete_comment(post_id, comment_id):
     if post_id in posts:
         if comment_id in posts[post_id]["comments"]:
@@ -318,5 +328,5 @@ def delete_comment(post_id, comment_id):
         return make_response(jsonify( { "error" : "Post not found" } ), 404)    
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# generate_password_hash("noONEwillEVERguessTHIS")
+# check_password_hash(hashed_password, "noONEwillEVERguessTHIS")
