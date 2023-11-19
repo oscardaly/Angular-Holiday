@@ -1,3 +1,5 @@
+from bson import ObjectId
+
 def get_users_from_mongo(users):
     data_to_return = []
 
@@ -20,16 +22,34 @@ def get_posts_from_mongo(posts):
 
     for post in posts:
         post['_id'] = str(post['_id'])
+        
         for comment in post['comments']:
             comment['_id'] = str(comment['_id'])
+       
         data_to_return.append(post)
 
     return data_to_return
 
 def get_post_by_title(posts, postTitle):
-    post = posts.find_one({'title' : postTitle})
+    try:
+        post = posts.find_one({'title' : postTitle})
+        
+        if post is not None:
+            post['_id'] = str(post['_id'])
+        
+        return post
+    
+    except:
+        return None
 
-    if post is not None:
-        post['_id'] = str(post['_id'])
-
-    return post
+def get_post_by_id(posts, postID):
+    try:
+        post = posts.find_one({'_id' : ObjectId(postID)})
+        
+        if post is not None:
+            post['_id'] = str(post['_id'])
+        
+        return post
+    
+    except:
+        return None

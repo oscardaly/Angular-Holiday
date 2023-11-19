@@ -20,3 +20,4 @@ if __name__ == "__main__":
 # add app back into certain files to import the baseurl from app
 # delete pycache from repo and add to gitignore
 # test authentication
+# convert everything to use json instead of x form uncoded

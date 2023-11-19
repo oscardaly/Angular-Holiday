@@ -23,15 +23,21 @@ def get_all_posts():
     return make_response(jsonify( data_to_return ), 200)
 
 
-# @posts_blueprint.route(BASE_URL + "/<string:id>", methods=["GET"])
-# def get_post(id):
-#     post = helpers.get_post_from_mongo_by_id(config.posts, postID)
+@posts_blueprint.route(BASE_URL + "/get-post", methods=["GET"])
+def get_post():
+    post = None
 
-#     if post is not None:
-#         return make_response(jsonify(posts), 200)
+    if request.args.get('id'):
+        post = helpers.get_post_by_id(config.posts, request.args.get('id'))
+    
+    elif request.args.get('title'):
+        post = helpers.get_post_by_title(config.posts, request.args.get('title'))
 
-#     else:
-#         return make_response(jsonify({ "error" : "Post not found" }), 404)
+    if post is not None:
+        return make_response(jsonify(post), 200)
+
+    else:
+        return make_response(jsonify({ "error" : "Post not found" }), 404)
 
 
 @posts_blueprint.route(BASE_URL, methods=["POST"])
@@ -69,7 +75,6 @@ def add_post():
         else:
             return make_response(jsonify({ "error" : "Post already exists with this title" }), 409)
 
-
     except:
         return make_response(jsonify( { "error" : "Missing form data" } ), 404)
 
@@ -78,29 +83,40 @@ def add_post():
 @utils.check_for_jwt
 def edit_post(id):
     try:
-        if id in posts:
-            new_post = {
-                "post_name" : request.json["post_name"],
-                "author" : {
-                    "forename" : request.json["author"]["forename"],
-                    "username" : request.json["author"]["username"],
-                    "user_photo" : request.json["author"]["user_photo"]
-                },
-                "cover_photo" : request.json["cover_photo"],
-                "description" : request.json["description"],
-                "text" : request.json["text"],
-                "comments" : {},
-                "city" : {
-                    "name" : request.json["city"]["name"],
-                    "population" : "",
-                    "latitude" : "",
-                    "longitude" : "",
-                    "country" : ""
-                }
-            }
+        post_with_id = helpers.get_post_by_id(config.posts, id)
 
-            posts[id] = new_post
-            return make_response( jsonify( { id : posts[id] } ), 200 )
+        if post_with_id is not None:
+            post_with_name = helpers.get_post_by_title(config.posts, request.json["title"])
+
+            if post_with_name is None:
+                updated_post = { "$set" : {
+                    "title" : request.json["title"],
+                    "author" : {
+                        "username" : request.json["author"]["username"],
+                        "forename" : request.json["author"]["forename"],
+                        "surname" : request.json["author"]["surname"],
+                        "user_photo" : request.json["author"]["user_photo"]
+                    },
+                    "cover_photo" : request.json["cover_photo"],
+                    "description" : request.json["description"],
+                    "text" : request.json["text"],
+                    "comments" : [],
+                    "city" : {
+                        "name" : request.json["city"]["name"],
+                        "population" : "",
+                        "latitude" : "",
+                        "longitude" : "",
+                        "country" : ""
+                    }
+                }}
+
+                config.posts.update_one({ "_id" : ObjectId(id) }, updated_post)
+                updated_post_link = "http://localhost:5000" + BASE_URL + "/" + id
+
+                return make_response( jsonify({"url": updated_post_link} ), 200)
+
+            else:
+                return make_response(jsonify( { "error" : "Post with this title already exists" } ), 409)
 
         else:
             return make_response(jsonify( { "error" : "Post not found" } ), 404)
@@ -109,15 +125,18 @@ def edit_post(id):
         return make_response(jsonify( { "error" : "Missing form data" } ), 404)
 
 
-# @posts_blueprint.route(BASE_URL + "/<string:id>", methods=["DELETE"])
-# @utils.check_for_jwt
-# def delete_post(id):
-#     if id in posts:
-#         del posts[id]
-#         return make_response( jsonify( {} ), 204)
+@posts_blueprint.route(BASE_URL + "/<string:id>", methods=["DELETE"])
+@utils.check_for_jwt
+def delete_post(id):
+    post = helpers.get_post_by_id(config.posts, id)
 
-#     else:
-#         return make_response(jsonify( { "error" : "Post not found" } ), 404)
+    if post is not None:
+        config.posts.delete_one( { "_id" : ObjectId(id) } )
+        return make_response( jsonify( {} ), 204)
+
+    else:
+        return make_response(jsonify({ "error" : "Post not found" }), 404)
+
     
 
 # @posts_blueprint.route(BASE_URL + "/<string:id>/comments", methods=["GET"])
@@ -212,5 +231,4 @@ def edit_post(id):
 
 # generate_password_hash("noONEwillEVERguessTHIS")
 # check_password_hash(hashed_password, "noONEwillEVERguessTHIS")
-# make the posts helper to get posts
-# set up the db for posts and import it 
+# make the posts helper to get posts - should i be using a param for username/id when searching?
