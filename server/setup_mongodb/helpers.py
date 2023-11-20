@@ -9,6 +9,7 @@ def get_users_from_mongo(users):
 
     return data_to_return
 
+
 def get_user_from_mongo_by_username(users, username):
     user = users.find_one({'username' : username})
 
@@ -16,6 +17,7 @@ def get_user_from_mongo_by_username(users, username):
         user['_id'] = str(user['_id'])
 
     return user
+
 
 def get_posts_from_mongo(posts):
     data_to_return = []
@@ -30,6 +32,7 @@ def get_posts_from_mongo(posts):
 
     return data_to_return
 
+
 def get_post_by_title(posts, postTitle):
     try:
         post = posts.find_one({'title' : postTitle})
@@ -42,6 +45,7 @@ def get_post_by_title(posts, postTitle):
     except:
         return None
 
+
 def get_post_by_id(posts, postID):
     try:
         post = posts.find_one({'_id' : ObjectId(postID)})
@@ -51,5 +55,27 @@ def get_post_by_id(posts, postID):
         
         return post
     
+    except:
+        return None
+
+
+def get_post_comments(post):
+        post_comments = []
+        
+        for comment in post["comments"]:
+            comment["_id"] = str(comment["_id"])
+            post_comments.append(comment)
+        
+        return post_comments
+
+
+def get_post_comment_by_id(posts, commentID):
+    try:
+        comment = posts.find_one( { "comments._id" : ObjectId(commentID) }, { "_id" : 0, "comments.$" : 1 } )
+        comment['comments'][0]['_id'] = str(comment['comments'][0]['_id'])
+        comment = comment['comments'][0]
+
+        return comment
+
     except:
         return None
