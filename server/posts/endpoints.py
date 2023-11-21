@@ -80,7 +80,7 @@ def add_post():
 
 
 @posts_blueprint.route(BASE_URL + "/<string:id>", methods=["PUT"])
-@utils.check_for_jwt
+@utils.admin_or_post_owner_required
 def edit_post(id):
     try:
         post_with_id = helpers.get_post_by_id(config.posts, id)
@@ -126,7 +126,7 @@ def edit_post(id):
 
 
 @posts_blueprint.route(BASE_URL + "/<string:id>", methods=["DELETE"])
-@utils.check_for_jwt
+@utils.admin_or_post_owner_required
 def delete_post(id):
     post = helpers.get_post_by_id(config.posts, id)
 
@@ -205,7 +205,7 @@ def get_comment_by_id(comment_id):
 
 
 @posts_blueprint.route(BASE_URL + "/comments/<string:comment_id>", methods=["PUT"])
-@utils.check_for_jwt
+@utils.admin_or_comment_owner_required
 def edit_comment(comment_id):
     try:
         comment = helpers.get_post_comment_by_id(config.posts, comment_id)
@@ -231,7 +231,7 @@ def edit_comment(comment_id):
          
 
 @posts_blueprint.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["DELETE"])
-@utils.check_for_jwt
+@utils.admin_or_comment_owner_required
 def delete_comment(post_id, comment_id):
     post = helpers.get_post_by_id(config.posts, post_id)
     comment = helpers.get_post_comment_by_id(config.posts, comment_id)

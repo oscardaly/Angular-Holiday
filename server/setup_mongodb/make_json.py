@@ -1,5 +1,11 @@
-import json
 from bson import ObjectId
+from pymongo import MongoClient
+import bcrypt
+
+client = MongoClient("mongodb://127.0.0.1:27017")
+db = client.holidayDB
+usersDB = db.users
+postsDB = db.posts
 
 users = [
     {
@@ -28,9 +34,9 @@ users = [
     }
 ]
 
-fout = open("users.json", "w")
-fout.write(json.dumps(users))
-fout.close()
+for user in users:
+    user["password"] = bcrypt.hashpw(user["password"], bcrypt.gensalt())
+    usersDB.insert_one(user)
 
 
 posts = [
@@ -172,6 +178,5 @@ posts = [
     }
 ]
 
-fout = open("posts.json", "w")
-fout.write(json.dumps(posts))
-fout.close()
+for post in posts:
+    postsDB.insert_one(post)

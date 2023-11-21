@@ -1,31 +1,59 @@
 from flask import Blueprint, jsonify, make_response, request
 import jwt
+import os
 import datetime
 from login import utils
+from pymongo import MongoClient
+import bcrypt
+from dotenv import load_dotenv
+
+client = MongoClient("mongodb://127.0.0.1:27017")
+db = client.holidayDB
+usersDB = db.users
+blacklistDB = db.blacklist
 
 login_blueprint = Blueprint('login', __name__)
 BASE_URL = "/api/v1.0"
-# staff = db.staff
-# blacklist = db.blacklist
-
+load_dotenv()
 
 @login_blueprint.route(BASE_URL + "/login", methods=['GET'])
 def login():
     auth = request.authorization
-    if auth and auth.password == 'password':
-        token = jwt.encode({'user' : auth.username, 
-                            'exp' : datetime.datetime.utcnow() + \
-                                    datetime.timedelta(minutes=120)}, 
-                            'SECRET_KEY')
-        return jsonify({'token' : token.decode('UTF-8')})
+    if auth:
+        user = usersDB.find_one({'username' : auth.username })
+
+        if user is not None:
+            if bcrypt.checkpw(bytes(auth.password, 'UTF-8'), user["password"]):
+                token = jwt.encode(
+                    {
+                        'username' : auth.username,
+                        'admin' : user["admin"], 
+                        'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=120)
+                    }, os.environ["SECRET_KEY"])
+                return make_response(jsonify({'token':token.decode('UTF-8')}), 200)
+
+            else:
+                return make_response(jsonify({'message' : 'Incorrect password'}), 401)
+                
+        else:
+            return make_response(jsonify({'message' : 'Incorrect username'}), 401) 
     
     else:
-        return make_response('Could not verify', 401, {'WWW-Authenticate' : 'Basic realm = "Login required"'})
+        return make_response({'message' : 'Authentication required'}, 401)
 
 
 @login_blueprint.route(BASE_URL + "/logout", methods=['GET'])
 @utils.check_for_jwt
 def logout():
-    token = request.headers['x-access-token']
-    # blacklist.insert_one({"token":token})
-    return make_response(jsonify({'message' : 'Logout successful'}), 200)
+    try:
+        token = request.headers['x-access-token']
+
+        if token is not None:
+            blacklistDB.insert_one({"token" : token})
+            return make_response(jsonify({'message' : 'Logout successful'}), 200)
+        
+        else:
+            return make_response(jsonify({'error' : 'No token found'}), 404)
+
+    except:
+        return make_response(jsonify( { "error" : "Missing form data" } ), 404)

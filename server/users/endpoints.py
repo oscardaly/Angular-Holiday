@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, make_response, request
 from login import utils
 from setup_mongodb import config, helpers
+import bcrypt
 
 users_blueprint = Blueprint('users', __name__)
 BASE_URL = "/api/v1.0/users"
@@ -13,7 +14,8 @@ def get_all_users():
 
 
 @users_blueprint.route(BASE_URL + "/<string:username>", methods=["GET"])
-@utils.check_for_jwt
+# @utils.check_for_jwt
+@utils.admin_or_account_owner_required
 def get_user_by_username(username):
     user = helpers.get_user_from_mongo_by_username(config.users, username)
     
@@ -27,18 +29,19 @@ def get_user_by_username(username):
 @users_blueprint.route(BASE_URL, methods=["POST"])
 def add_user():
     try:
-        user = helpers.get_user_from_mongo_by_username(config.users, request.form["username"])
-    
+        user = helpers.get_user_from_mongo_by_username(config.users, request.json["username"])
+
         if user is None:
+            hashed_password = bcrypt.hashpw(request.json["password"].encode('utf-8'), bcrypt.gensalt())
             new_user = { 
-                    "username" : request.form["username"],
-                    "forename" : request.form["forename"],
-                    "surname" : request.form["surname"],
-                    "password" : request.form["password"],
-                    "profile_picture" : request.form["profile_picture"],
-                    "type" : "user"
+                    "username" : request.json["username"],
+                    "forename" : request.json["forename"],
+                    "surname" : request.json["surname"],
+                    "password" : hashed_password,
+                    "profile_picture" : request.json["profile_picture"],
+                    "admin" : False
             }
-            
+
             new_user_id = config.users.insert_one(new_user)
             new_user_link = "http://localhost:5000" + BASE_URL + str(new_user_id.inserted_id)
 
@@ -53,18 +56,20 @@ def add_user():
 
 
 @users_blueprint.route(BASE_URL + "/<string:username>", methods=["PUT"])
-@utils.check_for_jwt
+# @utils.check_for_jwt
+@utils.admin_or_account_owner_required
 def edit_user(username):
     try:
+        hashed_password = bcrypt.hashpw(request.json["password"].encode('utf-8'), bcrypt.gensalt())
         response = config.users.update_one({ "username" : username }, 
         {
             "$set" : 
                 { 
-                    "forename" : request.form["forename"],
-                    "surname" : request.form["surname"],
-                    "password" : request.form["password"],
-                    "profile_picture" : request.form["profile_picture"],
-                    "username" : request.form["username"]
+                    "forename" : request.json["forename"],
+                    "surname" : request.json["surname"],
+                    "password" : hashed_password,
+                    "profile_picture" : request.json["profile_picture"],
+                    "username" : request.json["username"],
                 }
         })
 
@@ -80,7 +85,8 @@ def edit_user(username):
 
 
 @users_blueprint.route(BASE_URL + "/<string:username>", methods=["DELETE"])
-@utils.check_for_jwt
+# @utils.check_for_jwt
+@utils.admin_or_account_owner_required
 def delete_user(username):
     result = config.users.delete_one( { "username" : username } )
     if result.deleted_count == 1:

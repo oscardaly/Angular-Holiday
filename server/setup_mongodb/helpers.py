@@ -5,6 +5,7 @@ def get_users_from_mongo(users):
 
     for user in users.find():
         user['_id'] = str(user['_id'])
+        user['password'] = ''
         data_to_return.append(user)
 
     return data_to_return
@@ -15,6 +16,7 @@ def get_user_from_mongo_by_username(users, username):
 
     if user is not None:
         user['_id'] = str(user['_id'])
+        user['password'] = ''
 
     return user
 
@@ -39,6 +41,9 @@ def get_post_by_title(posts, postTitle):
         
         if post is not None:
             post['_id'] = str(post['_id'])
+
+            for comment in post['comments']:
+                comment['_id'] = str(comment['_id'])
         
         return post
     
@@ -52,7 +57,10 @@ def get_post_by_id(posts, postID):
         
         if post is not None:
             post['_id'] = str(post['_id'])
-        
+
+            for comment in post['comments']:
+                comment['_id'] = str(comment['_id'])  
+                      
         return post
     
     except:
