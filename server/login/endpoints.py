@@ -49,7 +49,10 @@ def logout():
         token = request.headers['x-access-token']
 
         if token is not None:
-            blacklistDB.insert_one({"token" : token})
+            blacklistDB.insert_one({
+            "timestamp" : datetime.datetime.now(tz=datetime.timezone.utc),
+            "token" : token
+            })
             return make_response(jsonify({'message' : 'Logout successful'}), 200)
         
         else:

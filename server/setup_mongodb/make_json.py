@@ -14,7 +14,7 @@ users = [
         "surname" : "surname",
         "password" : "user",
         "profile_picture" : "",
-        "type" : "user"
+        "admin" : False
     },
     {
         "username" : "admin",
@@ -22,7 +22,7 @@ users = [
         "surname" : "surname",
         "password" : "admin",
         "profile_picture" : "",
-        "type" : "admin"       
+        "admin" : "admin"       
     },
     {
         "username" : "dummy",
@@ -30,7 +30,7 @@ users = [
         "surname" : "surname",
         "password" : "dummy",
         "profile_picture" : "",
-        "type" : "user"       
+        "admin" : False       
     }
 ]
 

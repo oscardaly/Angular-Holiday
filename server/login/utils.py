@@ -47,7 +47,7 @@ def admin_or_account_owner_required(function):
 
                 if blacklisted_token is not None:
                     return make_response(jsonify({'message' : 'Token has been cancelled'}), 401)
-                
+
                 data = jwt.decode(token, os.environ["SECRET_KEY"])
 
                 if data["admin"] or data["username"] == username:

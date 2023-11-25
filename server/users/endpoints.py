@@ -1,3 +1,4 @@
+import datetime
 from flask import Blueprint, jsonify, make_response, request
 from login import utils
 from setup_mongodb import config, helpers
@@ -14,7 +15,6 @@ def get_all_users():
 
 
 @users_blueprint.route(BASE_URL + "/<string:username>", methods=["GET"])
-# @utils.check_for_jwt
 @utils.admin_or_account_owner_required
 def get_user_by_username(username):
     user = helpers.get_user_from_mongo_by_username(config.users, username)
@@ -56,7 +56,6 @@ def add_user():
 
 
 @users_blueprint.route(BASE_URL + "/<string:username>", methods=["PUT"])
-# @utils.check_for_jwt
 @utils.admin_or_account_owner_required
 def edit_user(username):
     try:
@@ -85,10 +84,18 @@ def edit_user(username):
 
 
 @users_blueprint.route(BASE_URL + "/<string:username>", methods=["DELETE"])
-# @utils.check_for_jwt
 @utils.admin_or_account_owner_required
 def delete_user(username):
-    result = config.users.delete_one( { "username" : username } )
+    token = request.headers['x-access-token']
+    
+    if token is not None:
+        config.blacklist.insert_one({
+            "timestamp" : datetime.datetime.now(tz=datetime.timezone.utc),
+            "token" : token
+            })
+
+    result = config.users.delete_one( { "username" : username } ) 
+
     if result.deleted_count == 1:
         return make_response( jsonify( {} ), 200)
 

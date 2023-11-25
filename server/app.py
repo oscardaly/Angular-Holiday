@@ -19,17 +19,12 @@ if __name__ == "__main__":
 
 
 # delete pycache from repo and add to gitignore
-# test authentication
 # add dates to posts and comments?
 # fix adding images
-# blacklisting users
 
-
-# Make user “type” to be boolean “admin”
-# Add endpoint to test logout
 # If an author of a post or comment updates their details it should update this in their comments and their posts 
 # Show extra functionality in the frontend
 # Could sort comments by newest/oldest
-
+# create table for cities
 
 # to start db we need to run .env.py, make_json and app
