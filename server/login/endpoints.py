@@ -5,6 +5,7 @@ import datetime
 from login import utils
 from pymongo import MongoClient
 import bcrypt
+from setup_mongodb import helpers
 from dotenv import load_dotenv
 
 client = MongoClient("mongodb://127.0.0.1:27017")
@@ -30,6 +31,7 @@ def login():
                         'admin' : user["admin"], 
                         'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=120)
                     }, os.environ["SECRET_KEY"])
+                os.environ["CURRENT_USER"] = auth.username
                 return make_response(jsonify({'token':token.decode('UTF-8')}), 200)
 
             else:
@@ -50,9 +52,10 @@ def logout():
 
         if token is not None:
             blacklistDB.insert_one({
-            "timestamp" : datetime.datetime.now(tz=datetime.timezone.utc),
-            "token" : token
+                "timestamp" : datetime.datetime.now(tz=datetime.timezone.utc),
+                "token" : token
             })
+            os.environ["CURRENT_USER"] = ""
             return make_response(jsonify({'message' : 'Logout successful'}), 200)
         
         else:

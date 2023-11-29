@@ -20,16 +20,54 @@ def get_user_from_mongo_by_username(users, username):
 
     return user
 
+def update_user_object_for_comment_subdocument(user):
+    new_user = {}
 
-def get_posts_from_mongo(posts):
+    for key in user:
+        new_key = "comments.$." + key
+        new_user[new_key] = user[key]
+
+    return new_user
+
+def get_posts_from_mongo(postsDB, page_size, page_start, sort_by_direction, sort_by_function, title, country, city):
+    aggregator = []
     data_to_return = []
+    
+    if (title):
+        aggregator.append({ "$match" : { "title" : title }})
+
+    if (country and city):
+        aggregator.extend([
+        { "$unwind" : "$city" },
+        { "$match" : 
+            {
+                "name" : city,
+                "country" : country 
+            },
+        }])
+
+    elif (country):
+        aggregator.extend([
+        { "$unwind" : "$city" },
+        { "$match" : 
+            {
+                "country" : country 
+            },
+        }])
+
+    if (sort_by_function == "comments"):
+        sort_by_function = "{ \"$size\" : \"comments\" }"
+
+    aggregator.extend([       
+        { "$sort" : { sort_by_function : sort_by_direction } },
+        { "$skip" : page_start },
+        { "$limit" : page_size }
+    ])
+
+    posts = postsDB.aggregate(aggregator)
 
     for post in posts:
-        post['_id'] = str(post['_id'])
-        
-        for comment in post['comments']:
-            comment['_id'] = str(comment['_id'])
-       
+        post = parse_post_from_mongo(post)
         data_to_return.append(post)
 
     return data_to_return
@@ -40,12 +78,7 @@ def get_post_by_title(posts, postTitle):
         post = posts.find_one({'title' : postTitle})
         
         if post is not None:
-            post['_id'] = str(post['_id'])
-
-            for comment in post['comments']:
-                comment['_id'] = str(comment['_id'])
-        
-        return post
+            return parse_post_from_mongo(post)
     
     except:
         return None
@@ -56,25 +89,45 @@ def get_post_by_id(posts, postID):
         post = posts.find_one({'_id' : ObjectId(postID)})
         
         if post is not None:
-            post['_id'] = str(post['_id'])
-
-            for comment in post['comments']:
-                comment['_id'] = str(comment['_id'])  
-                      
-        return post
+            return parse_post_from_mongo(post)
     
     except:
         return None
 
 
-def get_post_comments(post):
-        post_comments = []
-        
-        for comment in post["comments"]:
-            comment["_id"] = str(comment["_id"])
-            post_comments.append(comment)
-        
-        return post_comments
+def parse_post_from_mongo(post):
+    post['_id'] = str(post['_id'])
+    
+    for comment in post['comments']:
+        comment['_id'] = str(comment['_id'])
+    
+    return post
+
+
+def get_post_comments(postID, postsDB, page_start, page_size, sort_direction):
+    post_comments = postsDB.aggregate([
+        { "$match" : { "_id" : ObjectId(postID) }},  
+        { "$unwind" : "$comments" },
+        { "$project" : { 
+            "_id" : "$comments._id", 
+            "forename" : "$comments.forename", 
+            "surname" : "$comments.surname",
+            "text" : "$comments.text",
+            "username" : "$comments.username",
+            "profile_picture" : "$comments.profile_picture"
+        }},
+        { "$sort" : { "_id" : sort_direction } },
+        { "$skip" : page_start },
+        { "$limit" : page_size }
+    ])
+
+    data_to_return = []
+
+    for comment in post_comments:
+        comment["_id"] = str(comment["_id"])
+        data_to_return.append(comment)
+
+    return data_to_return
 
 
 def get_post_comment_by_id(posts, commentID):

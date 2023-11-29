@@ -18,13 +18,14 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-# delete pycache from repo and add to gitignore
-# add dates to posts and comments?
-# fix adding images
-
-# If an author of a post or comment updates their details it should update this in their comments and their posts 
-# Show extra functionality in the frontend
-# Could sort comments by newest/oldest
 # create table for cities
+# mock up frontend and check that all functionality needed is present in backend
+# Add 100+ items using make_json to start app/database
+    # add_fields.py to show changing database
+# change all errors to use proper error
+# Show extra functionality in the frontend
+
+# delete pycache from repo and add to gitignore
+# fix adding images
 
 # to start db we need to run .env.py, make_json and app
