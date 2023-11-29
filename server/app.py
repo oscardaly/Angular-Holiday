@@ -18,7 +18,10 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
+# Proper error handling
+# Merge token checkers together in another nested wrapper
 # create table for cities
+#   Infer city values when post created or edited 
 # mock up frontend and check that all functionality needed is present in backend
 # Add 100+ items using make_json to start app/database
     # add_fields.py to show changing database

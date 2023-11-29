@@ -107,6 +107,8 @@ def delete_user(username):
     result = config.users.delete_one( { "username" : username } ) 
 
     if result.deleted_count == 1:
+        config.posts.delete_many({ "author.username" : username})
+        config.posts.update_many( { }, { "$pull" : { "comments" : { "username" : username } } } ) 
         os.environ["CURRENT_USER"] = ""
         return make_response( jsonify( {} ), 200)
 
