@@ -1,0 +1,13 @@
+{
+    "name": "angular-holiday",
+    "version": "0.0.0",
+    "scripts": {
+      "start" : "npm run start:server && npm run start:webapp",
+      "start:server" : "cd server && brew services run mongodb-community && python3 app.py",
+      "stop:server" : "cd server && brew services stop mongodb-community",
+      "start:webapp" : "cd webapp && npm run start"
+    },
+    "private": true,
+    "dependencies": {},
+    "devDependencies": {}
+  }
