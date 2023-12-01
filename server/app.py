@@ -18,17 +18,13 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
+# add images - C4 page 13
 # Proper error handling
 # Merge token checkers together in another nested wrapper
-# create table for cities
-#   Infer city values when post created or edited 
 # mock up frontend and check that all functionality needed is present in backend
-# Add 100+ items using make_json to start app/database
-    # add_fields.py to show changing database
 # change all errors to use proper error
+# postman tests
 # Show extra functionality in the frontend
 
 # delete pycache from repo and add to gitignore
-# fix adding images
-
 # to start db we need to run .env.py, make_json and app

@@ -1,182 +1,73 @@
-from bson import ObjectId
 from pymongo import MongoClient
+from default_posts import default_posts
+from default_cities import default_cities
+from default_users import default_users
 import bcrypt
 
-client = MongoClient("mongodb://127.0.0.1:27017")
-db = client.holidayDB
-usersDB = db.users
-postsDB = db.posts
+def main():
+    client = MongoClient("mongodb://127.0.0.1:27017")
+    db = client.holidayDB
+    usersDB = db.users
+    postsDB = db.posts
+    citiesDB = db.cities
 
-users = [
-    {
-        "username" : "username",
-        "forename" : "user",
-        "surname" : "surname",
-        "password" : "user",
-        "profile_picture" : "",
-        "admin" : False
-    },
-    {
-        "username" : "admin",
-        "forename" : "admin",
-        "surname" : "surname",
-        "password" : "admin",
-        "profile_picture" : "",
-        "admin" : "admin"       
-    },
-    {
-        "username" : "dummy",
-        "forename" : "dummy",
-        "surname" : "surname",
-        "password" : "dummy",
-        "profile_picture" : "",
-        "admin" : False       
-    }
-]
-
-for user in users:
-    user["password"] = bcrypt.hashpw(user["password"], bcrypt.gensalt())
-    usersDB.insert_one(user)
+    setup_user_db(usersDB)
+    setup_posts_db(postsDB)
+    setup_cities_db(citiesDB)
+    add_cities_to_default_posts(postsDB, citiesDB)
 
 
-posts = [
-    {
-        "name" : "My trip to Edinburgh",
-        "author" : {
-            "username" : "example username",
-            "forename" : "name",
-            "surname" : "surname",
-            "user_photo" : "example photo"
-        },
-        "cover_photo" : "photo",
-        "description" : "This is a post talking about my recent trip to Edinburgh",
-        "text" : "",
-        "comments" : [
-            {
-                "username" : "example username",
-                "forename" : "name",
-                "surname" : "surname",
-                "user_photo" : "example photo",
-                "text" : "Loved that cafe!"
-            }
-        ],
-        "city" : {
-            "name" : "Edinburgh",
-            "population" : "",
-            "latitude" : "",
-            "longitude" : "",
-            "country" : "Scotland"
-        }
-    },
-    {
-        "name": "Exploring Tokyo",
-        "author": {
-            "username": "another username",
-            "forename": "another name",
-            "surname" : "surname",
-            "user_photo": "another photo"
-        },
-        "cover_photo": "photo",
-        "description": "Discovering the beauty of Tokyo",
-        "text" : "",
-        "comments": [
-            {
-                "username" : "example username",
-                "forename" : "name",
-                "surname" : "surname",
-                "text": "Amazing cityscape!"
-            }
-        ],
-        "city": {
-            "name": "Tokyo",
-            "population": "",
-            "latitude": "",
-            "longitude": "",
-            "country": "Japan"
-        }
-    },
-    {
-        "name": "Weekend in Paris",
-        "author": {
-            "username" : "example username",
-            "forename" : "name",
-            "surname" : "surname",
-            "user_photo": "third photo"
-        },
-        "cover_photo": "photo",
-        "description": "A romantic getaway to the city of love",
-        "text" : "",
-        "comments": [
-            {
-                "username" : "example username",
-                "forename" : "name",
-                "surname" : "surname",
-                "text": "Beautiful pictures!"
-            }
-        ],
-        "city" : {
-            "name": "Paris",
-            "population": "",
-            "latitude": "",
-            "longitude": "",
-            "country": "France"
-        }
-    },
-    {
-        "name": "Hiking in the Swiss Alps",
-        "author": {
-            "username" : "example username",
-            "forename" : "name",
-            "surname" : "surname",
-            "user_photo": "fourth photo"
-        },
-        "cover_photo": "photo",
-        "description": "Breath-taking views from the Swiss Alps",
-        "text" : "",
-        "comments": [
-            {
-                "username" : "example username",
-                "forename" : "name",
-                "surname" : "surname",
-                "text": "Nature at its finest!"
-            }
-        ],
-        "city": {
-            "name": "Swiss Alps",
-            "population": "",
-            "latitude": "",
-            "longitude": "",
-            "country": "Switzerland"
-        }
-    },
-    {
-        "name": "Safari in Serengeti",
-        "author": {
-           "username" : "example username",
-            "forename" : "name",
-            "surname" : "surname",
-            "user_photo": "fifth photo"
-        },
-        "cover_photo": "photo",
-        "description": "Witnessing the wonders of wildlife in Serengeti",
-        "text" : "",
-        "comments": [
-            {
-                "username" : "example username",
-                "forename" : "name",
-                "surname" : "surname",
-                "text": "Incredible experience!"
-            }
-        ],
-        "city": {
-            "name": "Serengeti",
-            "population": "",
-            "latitude": "",
-            "longitude": "",
-            "country": "Tanzania"
-        }
-    }
-]
+def setup_user_db(usersDB):
+    users = default_users
 
-for post in posts:
-    postsDB.insert_one(post)
+    for user in users:
+        user["password"] = bcrypt.hashpw(user["password"].encode('utf-8'), bcrypt.gensalt())
+        usersDB.insert_one(user)
+
+
+def setup_posts_db(postsDB):
+    posts = default_posts
+
+    for post in posts:
+        postsDB.insert_one(post)
+
+
+def setup_cities_db(citiesDB):
+    cities = default_cities
+    num_processed = 0
+
+    for city in cities:
+        try:
+            city.pop("iso3")
+            city.pop("admin_name")
+            city.pop("capital")
+
+        except:
+            print("no capital for " + city["city"])
+
+        finally:
+            citiesDB.insert_one(city)
+            num_processed = num_processed + 1
+
+            if num_processed % 1000 == 0:
+                print(str(num_processed) + " cities processed")
+
+
+def add_cities_to_default_posts(postsDB, citiesDB):
+    num_processed = 0
+    for post in postsDB.find({}, { "_id" : 1 , "city.name" : 1 }, no_cursor_timeout = True):
+        city = citiesDB.find_one({ "city_ascii" : post["city"]["name"] })
+        
+        if city == None:
+            print(post["city"]["name"])
+
+        postsDB.update_one({ "_id" : post["_id"] }, { "$set" : { "city" : city }})
+        
+        num_processed = num_processed + 1
+
+        if num_processed % 10 == 0:
+            print(str(num_processed) + " cities processed")
+
+
+if __name__ == "__main__":
+    main()

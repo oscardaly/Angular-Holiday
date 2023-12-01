@@ -5,3 +5,4 @@ db = client.holidayDB
 users = db.users 
 posts = db.posts
 blacklist = db.blacklist
+cities = db.cities

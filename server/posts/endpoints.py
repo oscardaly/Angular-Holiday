@@ -71,31 +71,31 @@ def add_post():
         post = helpers.get_post_by_title(config.posts, request.json["title"])
         
         if post is None:
-            current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
-            new_post = {
-                "title" : request.json["title"],
-                "author" : {
-                    "username" : current_user["username"],
-                    "forename" : current_user["forename"],
-                    "surname" : current_user["surname"],
-                    "profile_picture" : current_user["profile_picture"]
-                },
-                "cover_photo" : request.json["cover_photo"],
-                "description" : request.json["description"],
-                "text" : request.json["text"],
-                "comments" : [],
-                "city" : {
-                    "name" : request.json["city"]["name"],
-                    "population" : "",
-                    "latitude" : "",
-                    "longitude" : "",
-                    "country" : ""
-                }
-            }
+            city_for_post = helpers.get_city_by_id(config.cities, request.json["cityID"])
 
-            new_post_id = config.posts.insert_one(new_post)
-            new_post_link = "http://localhost:5000" + BASE_URL + "/" + str(new_post_id.inserted_id)
-            return make_response( jsonify({"url": new_post_link} ), 201)
+            if city_for_post:
+                current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
+                new_post = {
+                    "title" : request.json["title"],
+                    "author" : {
+                        "username" : current_user["username"],
+                        "forename" : current_user["forename"],
+                        "surname" : current_user["surname"],
+                        "profile_picture" : current_user["profile_picture"]
+                    },
+                    "cover_photo" : request.json["cover_photo"],
+                    "description" : request.json["description"],
+                    "text" : request.json["text"],
+                    "comments" : [],
+                    "city" : city_for_post
+                }
+
+                new_post_id = config.posts.insert_one(new_post)
+                new_post_link = "http://localhost:5000" + BASE_URL + "/" + str(new_post_id.inserted_id)
+                return make_response( jsonify({"url": new_post_link} ), 201)
+    
+            else:
+                return make_response(jsonify({ "error" : "City not found" }), 404)
 
         else:
             return make_response(jsonify({ "error" : "Post already exists with this title" }), 409)
@@ -114,34 +114,31 @@ def edit_post(id):
             post_with_name = helpers.get_post_by_title(config.posts, request.json["title"])
 
             if post_with_name is None:
-                current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
+                city_for_post = helpers.get_city_by_id(config.cities, request.json["cityID"])
+                print(city_for_post)
+                if city_for_post:
+                    current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
+                    updated_post = { "$set" : {
+                        "title" : request.json["title"],
+                        "author" : {
+                            "username" : current_user["username"],
+                            "forename" : current_user["forename"],
+                            "surname" : current_user["surname"],
+                            "profile_picture" : current_user["profile_picture"]
+                        },
+                        "cover_photo" : request.json["cover_photo"],
+                        "description" : request.json["description"],
+                        "text" : request.json["text"],
+                        "city" : city_for_post
+                    }}
+                
+                    config.posts.update_one({ "_id" : ObjectId(id) }, updated_post)
+                    updated_post_link = "http://localhost:5000" + BASE_URL + "/" + id
 
-                updated_post = { "$set" : {
-                    "title" : request.json["title"],
-                    "author" : {
-                        "username" : current_user["username"],
-                        "forename" : current_user["forename"],
-                        "surname" : current_user["surname"],
-                        "profile_picture" : current_user["profile_picture"]
-                    },
-                    "cover_photo" : request.json["cover_photo"],
-                    "description" : request.json["description"],
-                    "text" : request.json["text"],
-                    "comments" : [],
-                    "city" : {
-                        "name" : request.json["city"]["name"],
-                        "population" : "",
-                        "latitude" : "",
-                        "longitude" : "",
-                        "country" : ""
-                    }
-                }}
-             
-                config.posts.update_one({ "_id" : ObjectId(id) }, updated_post)
-                updated_post_link = "http://localhost:5000" + BASE_URL + "/" + id
-
-                return make_response( jsonify({"url": updated_post_link} ), 200)
-
+                    return make_response( jsonify({"url": updated_post_link} ), 200)
+                
+                else:
+                    return make_response(jsonify({ "error" : "City not found" }), 404)
             else:
                 return make_response(jsonify( { "error" : "Post with this title already exists" } ), 409)
 

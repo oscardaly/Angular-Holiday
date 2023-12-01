@@ -36,14 +36,14 @@ def get_posts_from_mongo(postsDB, page_size, page_start, sort_by_direction, sort
     if (title):
         aggregator.append({ "$match" : { "title" : title }})
 
-    if (country and city):
+    if (city):
         aggregator.extend([
         { "$unwind" : "$city" },
         { "$match" : 
-            {
-                "name" : city,
-                "country" : country 
-            },
+            { "$or" : [          
+                { "city" : city },
+                { "city.city_ascii" : city }
+            ]}
         }])
 
     elif (country):
@@ -51,12 +51,15 @@ def get_posts_from_mongo(postsDB, page_size, page_start, sort_by_direction, sort
         { "$unwind" : "$city" },
         { "$match" : 
             {
-                "country" : country 
+                "city.country" : country 
             },
         }])
 
     if (sort_by_function == "comments"):
         sort_by_function = "{ \"$size\" : \"comments\" }"
+
+    if (sort_by_function == "city"):
+        sort_by_function =  "city.city"
 
     aggregator.extend([       
         { "$sort" : { sort_by_function : sort_by_direction } },
@@ -97,7 +100,7 @@ def get_post_by_id(posts, postID):
 
 def parse_post_from_mongo(post):
     post['_id'] = str(post['_id'])
-    
+    post['city']['_id'] = str(post['city']['_id'])
     for comment in post['comments']:
         comment['_id'] = str(comment['_id'])
     
@@ -137,6 +140,13 @@ def get_post_comment_by_id(posts, commentID):
         comment = comment['comments'][0]
 
         return comment
+
+    except:
+        return None
+
+def get_city_by_id(citiesDB, cityID):
+    try:
+        return citiesDB.find_one({ "id" : cityID })
 
     except:
         return None
