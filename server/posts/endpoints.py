@@ -19,7 +19,6 @@ def get_all_posts():
     title = None
     city = None
     country = None
-    # most vs least comments
 
     if request.args.get('pn'):
         page_num = int(request.args.get('pn'))

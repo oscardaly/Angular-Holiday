@@ -1,0 +1,26 @@
+<div class="card w-96 bg-base-100 shadow-xl m-10">
+    <figure><img src={{postCard.coverImage}} alt="Shoes" /></figure>
+    <div class="card-body">
+      <div class="flex items-center gap-x-4 text-xs">
+        <time datetime="2020-03-16" class="text-gray-500">{{postCard.date}}</time>
+      </div>
+      <h2 class="card-title">
+        {{postCard.title}}
+      </h2>
+      <p>{{postCard.description}}</p>
+      <div class="relative mt-8 flex items-center gap-x-4">
+        <img src={{postCard.authorProfilePicture}} alt="" class="h-10 w-10 rounded-full bg-gray-50">
+        <div class="text-sm leading-6">
+          <p class="font-semibold text-gray-900">
+              <span class="absolute inset-0"></span>
+              {{postCard.authorName}}
+          </p>
+          <p class="text-gray-600">{{postCard.authorUsername}}</p>
+        </div>
+      </div>
+      <div class="card-actions justify-end">
+        <a href="#" class="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">{{postCard.city}}</a> 
+        <a href="#" class="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">{{postCard.country}}</a>
+      </div>
+    </div>
+  </div>
