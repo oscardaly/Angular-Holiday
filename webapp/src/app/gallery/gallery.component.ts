@@ -21,6 +21,7 @@ export class GalleryComponent {
   page_size: number = 6;
   sort_by_direction: number = 1;
   sort_by_function: string = "_id";
+  sortFunctions: string[] = ["Date", "Title", "City", "Country", "Comments"]
   
   constructor(public postService: PostService) {
     this.getParams();
@@ -32,8 +33,13 @@ export class GalleryComponent {
     this.postService.refresh();
   }
 
-  onClick() {
+  ViewMorePosts() {
     this.page_size += 6;
+    this.posts = this.postService.getPostsWithParams({pn: this.page, ps: this.page_size, sort_by_direction: this.sort_by_direction, sort_by_function: this.sort_by_function});
+  }
+
+  OnChangeSort(sort_by_function: string) {
+    this.sort_by_function = sort_by_function;
     this.posts = this.postService.getPostsWithParams({pn: this.page, ps: this.page_size, sort_by_direction: this.sort_by_direction, sort_by_function: this.sort_by_function});
   }
 

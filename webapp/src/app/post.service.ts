@@ -72,18 +72,20 @@ export class PostService {
 
     builder
       .append('pn', params.pn)
-      .append('ps', params.ps);
+      .append('ps', params.ps)
+      .append('sort_by_function', params.sort_by_function)
+      .append('sort_by_direction', params.sort_by_direction);
 
     if (params.title) {
         builder.append('title', params.title);
     }
 
-    if (params.city) {
+    else if (params.city) {
       builder
         .append('city', params.city);
     }
 
-    if (params.country) {
+    else if (params.country) {
       builder
         .append('country', params.country);  
     }
