@@ -1,55 +1,59 @@
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Post } from './post-card/post';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
+import { Post, remapPost } from './post-card/post';
 
-@Injectable({
-  providedIn: 'root'
-})
+const BASEURL = "http://127.0.0.1:5000/api/v1.0/posts"
+const baseHeaders = new HttpHeaders().set('content-type', 'content/json');
 
+@Injectable({providedIn: 'root'})
 export class PostService {
-  posts: Post[] = [
-    {
-      id: 123,
-      date: new Date(Date.now.toString()),
-      coverImage: "/assets/background.jpg",
-      title: "My trip to Edinburgh",
-      description: "I had a class trip to the Christmas Markets",
-      authorName: "Oscar Daly",
-      authorUsername: "odaly",
-      authorProfilePicture: "/assets/background.jpg",
-      city: "Edinburgh",
-      country: "Scotland"
-    },
-    {
-      id: 234,
-      date: new Date(Date.now.toString()),
-      coverImage: "/assets/background.jpg",
-      title: "My trip to Edinburgh",
-      description: "I had a class trip to the Christmas Markets",
-      authorName: "Oscar Daly",
-      authorUsername: "odaly",
-      authorProfilePicture: "/assets/background.jpg",
-      city: "Edinburgh",
-      country: "Scotland"
-    },
-    {
-      id: 345,
-      date: new Date(Date.now.toString()),
-      coverImage: "/assets/background.jpg",
-      title: "My trip to Edinburgh",
-      description: "I had a class trip to the Christmas Markets",
-      authorName: "Oscar Daly",
-      authorUsername: "odaly",
-      authorProfilePicture: "/assets/background.jpg",
-      city: "Edinburgh",
-      country: "Scotland"
-    }
-  ]
+  private postsSubject = new BehaviorSubject<Post[]>([]);
 
-  getAllPosts(): Post[] {
-    return this.posts;
+  constructor(private http: HttpClient) {}
+
+  createAuthorizationHeader(headers: Headers) {
+    headers.append('x-access-token', ''); 
   }
 
-  getPostByID(id: number): Post | undefined {
-    return this.posts.find((post) => post.id === id)
+  getPosts(): Observable<Post[]> {
+    return this.postsSubject;
+  }
+
+  getAllPosts(): Observable<Post[]> {
+    return this.http
+      .get<Post[]>(BASEURL, { headers: baseHeaders })
+      .pipe(map(json => json.map(remapPost))
+    );
+  }
+
+  refresh() {
+    return this.getAllPosts()
+        .subscribe(posts => this.postsSubject.next(posts));
+  }
+
+  clear(): void {
+    this.postsSubject.next([]);
+  }
+
+  remove(postID: number): Observable<any> {
+    return this.http.delete(BASEURL + "/" + postID)
+      .pipe(
+        tap(() => this.refresh())
+    );
+  }
+
+  getPostByID(postID: string) {
+    const params = new HttpParams().set('id', postID);
+
+    return this.http.get<Post>(BASEURL + "/get-post?id=" + postID, { headers: baseHeaders, params: params})
+      .pipe(
+          map(remapPost)
+        );
+    }
+
+  addPost(title: string, coverImage: string, description: string, text: string, cityID: number) {
+    console.log("Done");
   }
 }

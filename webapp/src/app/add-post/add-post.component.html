@@ -1,0 +1,18 @@
+<form [formGroup]="postForm" (submit)="addPost()">
+    <label for="title">Title</label>
+    <input id="title" type="text" formControlName="title" />
+    
+    <label for="cover-image">Cover Image</label>
+    <input id="cover-image" type="text" formControlName="coverImage" />
+    
+    <label for="description">Description</label>
+    <input id="description" type="text" formControlName="description" />
+    
+    <label for="text">Text</label>
+    <input id="text" type="text" formControlName="text" />
+    
+    <label for="city">City</label>
+    <input id="city" type="text" formControlName="city" />
+    
+    <button type="submit" class="primary">Create Post</button>
+  </form>

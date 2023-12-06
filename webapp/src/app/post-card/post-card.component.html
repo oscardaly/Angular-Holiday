@@ -1,5 +1,11 @@
 <div class="card w-96 bg-base-100 shadow-xl m-10">
-    <figure><img src={{postCard.coverImage}} alt="Shoes" /></figure>
+    <figure>
+        <img src="{{postCard.cover_photo}}" alt="Shoes"/>
+    </figure>
+    <a [routerLink]="['/view-post', postCard._id]">
+      <div
+        class="absolute bottom-0 left-0 right-0 top-0 h-full w-full overflow-hidden bg-[hsla(0,0%,98%,0.15)] bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-100"></div>
+    </a>
     <div class="card-body">
       <div class="flex items-center gap-x-4 text-xs">
         <time datetime="2020-03-16" class="text-gray-500">{{postCard.date}}</time>
@@ -9,18 +15,18 @@
       </h2>
       <p>{{postCard.description}}</p>
       <div class="relative mt-8 flex items-center gap-x-4">
-        <img src={{postCard.authorProfilePicture}} alt="" class="h-10 w-10 rounded-full bg-gray-50">
+        <img src={{postCard.author.profile_picture}} alt="" class="h-10 w-10 rounded-full bg-gray-50">
         <div class="text-sm leading-6">
           <p class="font-semibold text-gray-900">
               <span class="absolute inset-0"></span>
-              {{postCard.authorName}}
+              {{postCard.author.forename}} {{postCard.author.surname}}
           </p>
-          <p class="text-gray-600">{{postCard.authorUsername}}</p>
+          <p class="text-gray-600">{{postCard.author.username}}</p>
         </div>
       </div>
       <div class="card-actions justify-end">
-        <a href="#" class="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">{{postCard.city}}</a> 
-        <a href="#" class="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">{{postCard.country}}</a>
+        <a href="gallery?city={{postCard.city.city}}" class="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">{{postCard.city.city}}</a> 
+        <a href="gallery?country={{postCard.city.country}}" class="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">{{postCard.city.country}}</a>
       </div>
     </div>
   </div>
