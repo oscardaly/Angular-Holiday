@@ -13,10 +13,11 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 })
 
 export class HomeComponent implements OnInit {
+  posts: any;
   constructor(public postService: PostService) {
   }
 
   ngOnInit() {
-    this.postService.refresh();
+    this.posts = this.postService.getPostsWithParams({pn: 1, ps: 5, sort_by_direction: 1, sort_by_function: "_id"});
   }
 }

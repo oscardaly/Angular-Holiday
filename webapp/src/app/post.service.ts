@@ -27,8 +27,7 @@ export class PostService {
 
     return this.http
     .get<Post[]>(BASEURL, { headers: baseHeaders, params: postParams })
-    .pipe(map(json => json.map(remapPost))
-  );
+    .pipe(map(json => json.map(remapPost)));
   }
 
   getAllPosts(): Observable<Post[]> {
