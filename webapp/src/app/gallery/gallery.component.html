@@ -2,3 +2,14 @@
     <input type="text" placeholder="Filter by city" />
     <button class="primary" type="button">Search</button>
 </form>
+
+<div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-row auto-rows-max">
+    <app-post-card 
+      *ngFor="let postCard of posts | async"
+      [postCard]="postCard">
+    </app-post-card>
+</div>
+
+<button (click)="onClick()" class="btn btn-active btn-primary">
+    View more
+ </button>

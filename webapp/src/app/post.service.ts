@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
+import { HttpParamsBuilder } from './HttpParamsBuilder';
 import { Post, remapPost } from './post-card/post';
 
 const BASEURL = "http://127.0.0.1:5000/api/v1.0/posts"
@@ -19,6 +20,15 @@ export class PostService {
 
   getPosts(): Observable<Post[]> {
     return this.postsSubject;
+  }
+
+  getPostsWithParams(params: GetPostsParams): Observable<Post[]> {
+    const postParams = this.buildParams(params)
+
+    return this.http
+    .get<Post[]>(BASEURL, { headers: baseHeaders, params: postParams })
+    .pipe(map(json => json.map(remapPost))
+  );
   }
 
   getAllPosts(): Observable<Post[]> {
@@ -56,4 +66,38 @@ export class PostService {
   addPost(title: string, coverImage: string, description: string, text: string, cityID: number) {
     console.log("Done");
   }
+
+  buildParams(params: GetPostsParams) {
+    const builder = new HttpParamsBuilder();
+
+    builder
+      .append('pn', params.pn)
+      .append('ps', params.ps);
+
+    if (params.title) {
+        builder.append('title', params.title);
+    }
+
+    if (params.city) {
+      builder
+        .append('city', params.city);
+    }
+
+    if (params.country) {
+      builder
+        .append('country', params.country);  
+    }
+
+    return builder.build();
+  }
+}
+
+interface GetPostsParams {
+  pn: number;
+  ps: number; 
+  sort_by_direction: number;
+  sort_by_function: string;
+  title?: string;
+  city?: string;
+  country?: string;
 }
