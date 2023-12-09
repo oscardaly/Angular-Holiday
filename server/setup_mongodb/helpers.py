@@ -34,7 +34,10 @@ def get_posts_from_mongo(postsDB, page_size, page_start, sort_by_direction, sort
     data_to_return = []
     
     if (title):
-        aggregator.append({ "$match" : { "title" : title }})
+        aggregator.extend([
+            { "$match" : { "$text": { "$search": title }}}, 
+            { "$sort": { "score": { "$meta": "textScore" }}}
+        ])
 
     if (city):
         aggregator.extend([
@@ -46,7 +49,7 @@ def get_posts_from_mongo(postsDB, page_size, page_start, sort_by_direction, sort
             ]}
         }])
 
-    elif (country):
+    if (country):
         aggregator.extend([
         { "$unwind" : "$city" },
         { "$match" : 
@@ -55,11 +58,17 @@ def get_posts_from_mongo(postsDB, page_size, page_start, sort_by_direction, sort
             },
         }])
 
-    if (sort_by_function == "comments"):
+    if (sort_by_function == "date"):
+        sort_by_function = "_id"
+
+    elif (sort_by_function == "comments"):
         sort_by_function = "{ \"$size\" : \"comments\" }"
 
-    if (sort_by_function == "city"):
+    elif (sort_by_function == "city"):
         sort_by_function =  "city.city"
+    
+    elif (sort_by_function == "country"):
+        sort_by_function =  "city.country"
 
     aggregator.extend([       
         { "$sort" : { sort_by_function : sort_by_direction } },

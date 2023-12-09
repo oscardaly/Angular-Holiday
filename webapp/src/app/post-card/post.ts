@@ -13,8 +13,12 @@ export interface Post {
         city: string,
         city_ascii: string,
         country: string,
+        population: string,
+        lat: string,
+        lng: string,
         id: string
     }
+    text: string,
     cover_photo: string,
     title: string,
     description: string,

@@ -114,7 +114,7 @@ def edit_post(id):
 
             if post_with_name is None:
                 city_for_post = helpers.get_city_by_id(config.cities, request.json["cityID"])
-                print(city_for_post)
+
                 if city_for_post:
                     current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
                     updated_post = { "$set" : {

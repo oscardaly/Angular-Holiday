@@ -3,6 +3,7 @@ from flask import Flask
 from users.endpoints import users_blueprint
 from login.endpoints import login_blueprint
 from posts.endpoints import posts_blueprint
+from cities.endpoints import cities_blueprint
 from dotenv import load_dotenv
 from flask_cors import CORS
 
@@ -10,6 +11,7 @@ app = Flask(__name__)
 app.register_blueprint(users_blueprint)
 app.register_blueprint(login_blueprint)
 app.register_blueprint(posts_blueprint)
+app.register_blueprint(cities_blueprint)
 CORS(app)
 
 load_dotenv()

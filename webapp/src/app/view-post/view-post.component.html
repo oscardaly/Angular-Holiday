@@ -1,16 +1,33 @@
-<div class="hero min-h-screen" style="background-image: url({{post?.coverImage}});">
+<div *ngIf="post$ | async as post">
+<div class="hero min-h-screen" style="background-image: url({{post.cover_photo}});">
     <div class="hero-overlay bg-opacity-60"></div>
     <div class="hero-content text-center text-neutral-content">
       <div class="max-w-md">
-        <h1 class="mb-5 text-5xl font-bold">{{post?.title}}</h1>
-        <p class="mb-5">{{post?.description}}</p>
-        <!-- use component here for author layout -->
-        <p class="mb-5">{{post?.authorName}}</p>
-        <p class="mb-5">{{post?.date}}</p>        
-        <p class="mb-5">{{post?.authorUsername}}</p>
-        <p class="mb-5">{{post?.authorProfilePicture}}</p>
-        <p class="mb-5">{{post?.country}}</p>
-        <p class="mb-5">{{post?.city}}</p>
+        
       </div>
     </div>
+</div>
+
+  <h1 class="mb-5 text-5xl font-bold">{{post.title}}</h1>
+  <p class="mb-5">{{post.description}}</p>
+  
+  <!-- use component here for author layout -->
+  <div class="relative mt-8 flex items-center gap-x-4">
+  <img src={{post.author.profile_picture}} alt="" class="h-10 w-10 rounded-full bg-gray-50">
+    <div class="text-sm leading-6">
+      <p class="font-semibold text-gray-900">
+          <span class="absolute inset-0"></span>
+            {{post.author.forename}} {{post.author.surname}}
+      </p>
+      <p class="text-gray-600">{{post.author.username}}</p>
+    </div>
+  </div>
+
+  <p class="mb-5">{{post.text}}</p>        
+  <p class="mb-5">{{post.date}}</p>        
+  <p class="mb-5">{{post.city.country}}</p>
+  <p class="mb-5">{{post.city.city}}</p>
+  <p class="mb-5">{{post.city.population}}</p>        
+  <p class="mb-5">{{post.city.lat}}</p>        
+  <p class="mb-5">{{post.city.lng}}</p>        
 </div>

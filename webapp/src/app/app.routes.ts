@@ -1,4 +1,3 @@
-import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { AddPostComponent } from './add-post/add-post.component';
 import { GalleryComponent } from './gallery/gallery.component';

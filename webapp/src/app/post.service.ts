@@ -11,6 +11,7 @@ const baseHeaders = new HttpHeaders().set('content-type', 'content/json');
 @Injectable({providedIn: 'root'})
 export class PostService {
   private postsSubject = new BehaviorSubject<Post[]>([]);
+  //can use this for caching entire array
 
   constructor(private http: HttpClient) {}
 
@@ -56,10 +57,10 @@ export class PostService {
   getPostByID(postID: string) {
     const params = new HttpParams().set('id', postID);
 
-    return this.http.get<Post>(BASEURL + "/get-post?id=" + postID, { headers: baseHeaders, params: params})
+    return this.http.get<Post>(BASEURL + "/get-post", { headers: baseHeaders, params: params})
       .pipe(
-          map(remapPost)
-        );
+        map(remapPost)
+      );
     }
 
   addPost(title: string, coverImage: string, description: string, text: string, cityID: number) {
@@ -79,12 +80,12 @@ export class PostService {
         builder.append('title', params.title);
     }
 
-    else if (params.city) {
+    if (params.city) {
       builder
         .append('city', params.city);
     }
 
-    else if (params.country) {
+    if (params.country) {
       builder
         .append('country', params.country);  
     }
