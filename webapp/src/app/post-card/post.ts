@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { Comment } from "./comment"
 
 export interface Post {
@@ -14,8 +13,8 @@ export interface Post {
         city_ascii: string,
         country: string,
         population: string,
-        lat: string,
-        lng: string,
+        lat: number,
+        lng: number,
         id: string
     }
     text: string,

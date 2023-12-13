@@ -3,8 +3,8 @@ default_users = [
         "username": "odaly",
         "forename": "oscar",
         "surname": "daly",
-        "password" : "user",
-        "profile_picture": "picture",     
+        "password" : "password",
+        "profile_picture": "../../assets/users/odaly.jpg",     
         "admin" : False
     },
     {

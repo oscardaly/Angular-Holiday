@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { PostService } from '../post.service';
+import { PostService } from '../services/post.service';
 
 @Component({
   selector: 'app-add-post',

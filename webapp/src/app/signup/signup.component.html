@@ -1,0 +1,45 @@
+<div class="relative flex flex-col items-center justify-center h-screen overflow-hidden">
+    <div class="w-full p-6 bg-white border-t-4 border-gray-600 rounded-md shadow-md border-top lg:max-w-lg">
+        <h1 class="text-3xl font-semibold text-center text-gray-700">Sign up</h1>
+        <form [formGroup]="signUpForm" (submit)="handleSignUp()" class="space-y-4">
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Username</span>
+                </label>
+                <input formControlName="username" type="text" placeholder="Enter Username" class="w-full input input-bordered" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Password</span>
+                </label>
+                <input formControlName="password" type="password" placeholder="Enter Password"
+                    class="w-full input input-bordered" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Forename</span>
+                </label>
+                <input formControlName="forename" type="text" placeholder="Enter Forename"
+                    class="w-full input input-bordered" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Surname</span>
+                </label>
+                <input formControlName="surname" type="text" placeholder="Enter Surname"
+                    class="w-full input input-bordered" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Profile Picture</span>
+                </label>
+                <input formControlName="profile_picture" type="text" placeholder="Enter Password"
+                    class="w-full input input-bordered" />
+            </div>
+            <a href="login" class="text-xs text-gray-600 hover:underline hover:text-blue-600">Log in</a>
+            <div>
+                <button type="submit" class="btn btn-block">Sign up</button>
+            </div>
+        </form>
+    </div>
+</div>

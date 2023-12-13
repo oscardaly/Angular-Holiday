@@ -31,7 +31,10 @@
             ],
             "styles": [
               "src/styles.sass",
-              "node_modules/@ng-select/ng-select/themes/default.theme.css"
+              "@angular/material/prebuilt-themes/pink-bluegrey.css",
+              "node_modules/@ng-select/ng-select/themes/default.theme.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "node_modules/ngx-simple-modal/styles/simple-modal.css"
             ],
             "scripts": [],
             "server": "src/main.server.ts",
@@ -96,6 +99,7 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.sass"
             ],
             "scripts": []

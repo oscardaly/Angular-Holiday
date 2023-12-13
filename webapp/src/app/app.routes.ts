@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { AddPostComponent } from './add-post/add-post.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { SignupComponent } from './signup/signup.component';
 import { ViewPostComponent } from './view-post/view-post.component';
 
 export const routes: Routes = [
@@ -24,5 +27,20 @@ export const routes: Routes = [
         path: 'add-post',
         component: AddPostComponent,
         title: 'Add Post'
+    },
+    {
+        path: 'login',
+        component: LoginComponent,
+        title: 'Login'
+    },
+    {
+        path: 'signup',
+        component: SignupComponent,
+        title: 'Sign Up'
+    },
+    {
+        path: '**',
+        component: PageNotFoundComponent,
+        title: 'Where\'s this?'
     }
 ];

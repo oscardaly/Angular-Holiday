@@ -191,7 +191,7 @@ def add_comment_to_post(id):
     try:
         current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
         post = helpers.get_post_by_id(config.posts, id)
-
+        print(1)
         if post is not None:
             new_comment = {
                 "_id" : ObjectId(),
@@ -199,9 +199,9 @@ def add_comment_to_post(id):
                 "forename" : current_user["forename"],
                 "surname" : current_user["surname"],
                 "profile_picture" : current_user["profile_picture"],
-                "text" : request.json["text"]
+                "text" : request.get_json(force=True)["text"]
             }
-
+            print(2)
             config.posts.update_one( { "_id" : ObjectId(id) }, { "$push" : { "comments" : new_comment } } )
             new_comment_link = BASE_URL + "/" + id + "/comments/" + str(new_comment['_id'])
             return make_response( jsonify({ "url" : new_comment_link } ), 201 )
@@ -228,6 +228,7 @@ def get_comment_by_id(comment_id):
 @utils.admin_or_comment_owner_required
 def edit_comment(comment_id):
     try:
+        print(os.environ["CURRENT_USER"])
         current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
         comment = helpers.get_post_comment_by_id(config.posts, comment_id)
 

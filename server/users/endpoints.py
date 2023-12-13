@@ -34,29 +34,35 @@ def get_user_by_username(username):
 @users_blueprint.route(BASE_URL, methods=["POST"])
 def add_user():
     try:
-        user = helpers.get_user_from_mongo_by_username(config.users, request.json["username"])
+        request_data = request.get_json(force=True)
+        user = helpers.get_user_from_mongo_by_username(config.users, request_data["username"])
+        
+        if (request_data["username"] != "" and request_data["forename"] != "" and 
+            request_data["surname"] != "" and request_data["password"] != "" and request_data["profile_picture"] != ""):
+            if user is None:
+                hashed_password = bcrypt.hashpw(request_data["password"].encode('utf-8'), bcrypt.gensalt())
+                new_user = { 
+                        "username" : request_data["username"],
+                        "forename" : request_data["forename"],
+                        "surname" : request_data["surname"],
+                        "password" : hashed_password,
+                        "profile_picture" : request_data["profile_picture"],
+                        "admin" : False
+                }
 
-        if user is None:
-            hashed_password = bcrypt.hashpw(request.json["password"].encode('utf-8'), bcrypt.gensalt())
-            new_user = { 
-                    "username" : request.json["username"],
-                    "forename" : request.json["forename"],
-                    "surname" : request.json["surname"],
-                    "password" : hashed_password,
-                    "profile_picture" : request.json["profile_picture"],
-                    "admin" : False
-            }
+                new_user_id = config.users.insert_one(new_user)
+                new_user_link = "http://localhost:5000" + BASE_URL + "/" + str(new_user_id.inserted_id)
 
-            new_user_id = config.users.insert_one(new_user)
-            new_user_link = "http://localhost:5000" + BASE_URL + "/" + str(new_user_id.inserted_id)
+                return make_response( jsonify( { "url" : new_user_link } ), 201 )
 
-            return make_response( jsonify( { "url" : new_user_link } ), 201 )
-
+            else:
+                return make_response(jsonify({ "error" : "Username already exists" }), 409)
+        
         else:
-            return make_response(jsonify({ "error" : "Username already exists" }), 409)
+           return make_response(jsonify( { "error" : "Missing form data" } ), 404)         
 
     except:
-        return make_response(jsonify( { "error" : "Missing form data" } ), 404)
+        return make_response(jsonify( { "error" : "Server error" } ), 500)
 
 
 

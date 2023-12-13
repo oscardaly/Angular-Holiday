@@ -1,37 +1,46 @@
-<h1>Gallery</h1>
-<input [(ngModel)]="title" type="text" placeholder="Search by title" (change)="getPosts()" class="input input-bordered w-full max-w-xs" />
+<div class="flex mx-auto justify-center w-full min-w-[844px]">
+<div class="mt-10 p-[32px] flex flex-col justify-center max-w-[1650px]">
+    <h1 class="text-4xl font-bold tracking-tight sm:text-6xl px-10">Gallery</h1>
 
-    <div class="max-w-xs">
-        <p>Filter by:</p>
-        <ng-select [(ngModel)]="country" (clear)="onClearFilter()" (close)="onCloseCountryFilter()" placeholder="Country" [items]="countries$ | async"></ng-select>
-        <ng-select [(ngModel)]="city" (clear)="onClearFilter()" (close)="getPosts()" [disabled]="isCitiesFilterDisabled" placeholder="{{cityPlaceholder}}" [items]="cities$ | async"></ng-select>
-    </div>
-    <!-- <button class="primary" type="button" (click)="searchForPost()" >Search</button> -->
-    <div class="dropdown">
-        <div tabindex="0" role="button" class="btn m-1">Sort by</div>
-        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-            <div *ngFor="let item of sortFunctions">
-                <li (click)="OnChangeSort(item.toLowerCase())"><a>{{item}}</a></li>
+    <div class="items-center flex flex-row w-full justify-between py-5 px-10 min-w-[844px]">
+        <input [(ngModel)]="title" type="text" placeholder="Search by title" (change)="getPosts()" class="input input-bordered w-full max-w-xs" />
+
+        <div class="max-w-md">
+            <p>Filter by:</p>
+            <ng-select [(ngModel)]="country" (clear)="onClearFilter()" (close)="onCloseCountryFilter()" placeholder="Country" [items]="countries$ | async"></ng-select>
+            <ng-select [(ngModel)]="city" (clear)="onClearFilter()" (close)="getPosts()" [disabled]="isCitiesFilterDisabled" placeholder="{{cityPlaceholder}}" [items]="cities$ | async"></ng-select>
+        </div>
+        
+        <div class="">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn m-1">Sort by</div>
+                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                    <div *ngFor="let item of sortFunctions">
+                        <li (click)="OnChangeSort(item.toLowerCase())"><a>{{item}}</a></li>
+                    </div>
+                </ul>
             </div>
-        </ul>
+            <label class="swap swap-rotate items-center">
+                <input type="checkbox" (click)=swapSortDirection()/>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="swap-off fill-current w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="swap-on fill-current w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
+                </svg>
+            </label>
+        </div>
     </div>
-    <label class="swap swap-rotate">
-        <input type="checkbox" (click)=swapSortDirection()/>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="swap-off fill-current w-10 h-10">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="swap-on fill-current w-10 h-10">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
-        </svg>
-    </label>
 
-<div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-row auto-rows-max">
-    <app-post-card 
-      *ngFor="let postCard of posts | async"
-      [postCard]="postCard">
-    </app-post-card>
+    <div class="flex flex-wrap justify-between">
+        <app-post-card 
+        *ngFor="let postCard of posts"
+        [postCard]="postCard">
+        </app-post-card>
+    </div>
+
+    <button *ngIf="displayViewMoreButton()" (click)="ViewMorePosts()" class="text-lg font-semibold flex justify-center m-10">
+        View more...
+    </button>
 </div>
-
-<button (click)="ViewMorePosts()" class="btn btn-active btn-primary">
-    View more
-</button>
+</div>

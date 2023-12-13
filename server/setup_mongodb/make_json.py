@@ -12,9 +12,9 @@ def main():
     citiesDB = db.cities
 
     setup_user_db(usersDB)
-    setup_posts_db(postsDB)
-    setup_cities_db(citiesDB)
-    add_cities_to_default_posts(postsDB, citiesDB)
+    # setup_posts_db(postsDB)
+    # setup_cities_db(citiesDB)
+    # add_cities_to_default_posts(postsDB, citiesDB)
 
 
 def setup_user_db(usersDB):

@@ -1,33 +1,119 @@
 <div *ngIf="post$ | async as post">
-<div class="hero min-h-screen" style="background-image: url({{post.cover_photo}});">
-    <div class="hero-overlay bg-opacity-60"></div>
-    <div class="hero-content text-center text-neutral-content">
-      <div class="max-w-md">
-        
+  <div class="hero bg-no-repeat bg-cover bg-center bg-fixed" style="background-image: url({{post.cover_photo}})">
+    <div class="hero-overlay bg-opacity-70"></div>
+      <div class="hero-content text-center text-neutral-content">
+        <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+          <div class="text-center">
+            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">{{post.title}}</h1>
+            <p class="mt-6 text-lg leading-8 text-gray-300">{{post.description}}</p>
+              <!-- use component here for author layout -->
+            <div class="relative mt-8 flex justify-center gap-x-4">
+              <img src={{post.author.profile_picture}} alt="profile picture" class="h-12 w-12 rounded-full bg-gray-50">
+                <div class="text-sm leading-6">
+                  <p class="font-semibold text-white">
+                      <span class="absolute inset-0"></span>
+                        {{post.author.forename}} {{post.author.surname}}
+                  </p>
+                  <p class="text-gray-300 text-left">{{post.author.username}}</p>
+                </div>
+              </div>
+          </div>
+          <p class="mt-5 text-white">{{post.date}}</p>        
+        </div>
       </div>
-    </div>
-</div>
-
-  <h1 class="mb-5 text-5xl font-bold">{{post.title}}</h1>
-  <p class="mb-5">{{post.description}}</p>
-  
-  <!-- use component here for author layout -->
-  <div class="relative mt-8 flex items-center gap-x-4">
-  <img src={{post.author.profile_picture}} alt="" class="h-10 w-10 rounded-full bg-gray-50">
-    <div class="text-sm leading-6">
-      <p class="font-semibold text-gray-900">
-          <span class="absolute inset-0"></span>
-            {{post.author.forename}} {{post.author.surname}}
-      </p>
-      <p class="text-gray-600">{{post.author.username}}</p>
-    </div>
   </div>
 
-  <p class="mb-5">{{post.text}}</p>        
-  <p class="mb-5">{{post.date}}</p>        
-  <p class="mb-5">{{post.city.country}}</p>
-  <p class="mb-5">{{post.city.city}}</p>
-  <p class="mb-5">{{post.city.population}}</p>        
-  <p class="mb-5">{{post.city.lat}}</p>        
-  <p class="mb-5">{{post.city.lng}}</p>        
+  <div class="w-full my-20 flex justify-center">
+    <p class="max-w-2xl text-xl">{{post.text}}</p> 
+  </div>
+
+  <div class="hero bg-base-200 py-20">
+    <div class="hero-content flex-row">
+      <div>
+        <h1 class="text-5xl font-bold">City Information</h1>
+        <p class="py-6">City: {{post.city.city}}</p>
+        <p class="py-6">Country: {{post.city.country}}</p>
+        <p class="py-6">Population: {{post.city.population}}</p>
+      </div>
+      <google-map [center]="getCentre(post.city.lat, post.city.lng)" [zoom]="12"/>
+    </div>
+  </div> 
+
+  <div class="flex flex-row justify-center mt-10 align-center">
+      <h1 class="text-4xl font-bold tracking-tight sm:text-6xl px-10 text-center">Comments</h1>  
+      <button class="btn" (click)="openModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>         
+      </button>
+      <label class="swap swap-rotate items-center">
+          <input type="checkbox" (click)=swapSortDirection()/>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="swap-off fill-current w-10 h-10">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="swap-on fill-current w-10 h-10">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
+          </svg>
+      </label>
+  </div>
+
+  <p *ngIf="comments.length == 0" class="flex justify-center m-10">No comments yet!</p>
+
+  <div *ngFor="let comment of comments" class="flex justify-center">
+    <app-comment-box [comment]="comment"></app-comment-box>
+  </div>   
 </div>
+
+<!-- <dialog id="commentModal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Hello!</h3>
+    <input type="text" placeholder="Type comment here" class="input input-bordered w-full max-w-xs" />
+    <div class="modal-action">
+      <form method="dialog">
+        if there is a button in form, it will close the modal
+        <button class="btn" (click)="closeModal()">Close</button>
+        <button class="btn btn-primary" (click)="addComment()">Add</button>
+      </form>
+    </div>
+  </div>
+</dialog> -->
+
+<!-- <div class="modal-header">
+  <h5 class="modal-title" id="gridModalLabel">Grids in modals</h5>
+  <button
+    type="button"
+    class="btn-close"
+    (click)="modalRef.close()"
+    aria-label="Close"
+  ></button>
+</div>
+<div class="modal-body">
+  <div class="container-fluid bd-example-row">
+    <div class="row">
+      <div class="col-md-4 col-example">.col-md-4</div>
+      <div class="col-md-4 ms-auto col-example">.col-md-4 .ms-auto</div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 ms-auto col-example">.col-md-3 .ms-auto</div>
+      <div class="col-md-2 ms-auto col-example">.col-md-2 .ms-auto</div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 ms-auto col-example">.col-md-6 .ms-auto</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-9 col-example">
+        Level 1: .col-sm-9
+        <div class="row">
+          <div class="col-8 col-sm-6 col-example">Level 2: .col-8 .col-sm-6</div>
+          <div class="col-4 col-sm-6 col-example">Level 2: .col-4 .col-sm-6</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="modalRef.close()">
+    Close
+  </button>
+  <button type="button" class="btn btn-primary">Save changes</button>
+</div> -->

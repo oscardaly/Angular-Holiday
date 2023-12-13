@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Observable, of } from 'rxjs';
-import { CityService } from '../city.service';
+import { Post } from '../post-card/post';
 import { PostCardComponent } from '../post-card/post-card.component';
-import { PostService } from '../post.service';
+import { CityService } from '../services/city.service';
+import { PostService } from '../services/post.service';
 
 @Component({
   selector: 'app-gallery',
@@ -18,7 +19,7 @@ import { PostService } from '../post.service';
 
 export class GalleryComponent {
   route: ActivatedRoute = inject(ActivatedRoute);
-  posts: any;
+  posts: Post[] = []
   title: string | undefined = undefined;
   country: string | undefined = undefined;
   city: string | undefined = undefined;
@@ -39,7 +40,8 @@ export class GalleryComponent {
   }
 
   getPosts() {
-    this.posts = this.postService.getPostsWithParams({pn: this.page, ps: this.page_size, sort_by_direction: this.sort_by_direction, sort_by_function: this.sort_by_function, city: this.city, country: this.country, title: this.title});
+    this.postService.getPostsWithParams({pn: this.page, ps: this.page_size, sort_by_direction: this.sort_by_direction, sort_by_function: this.sort_by_function, city: this.city, country: this.country, title: this.title})
+    .subscribe(posts => this.posts = posts);
   }
 
   ViewMorePosts() {
@@ -78,6 +80,7 @@ export class GalleryComponent {
       this.cityPlaceholder = "City";
       this.isCitiesFilterDisabled = false;
       this.cities$ = this.cityService.getCities(this.country);
+      this.updateRoute("country", this.country);
     }
 
     else {
@@ -87,33 +90,40 @@ export class GalleryComponent {
     }
   }
 
+  updateRoute(paramName: string, value: string) {
+    // this.route.queryParams.navigate([], {
+    //   queryParams[paramName] = value;
+    //   queryParamsHandling: 'merge'
+    // });
+  }
+
+  displayViewMoreButton(): boolean {
+    if (this.posts.length >= 6) {
+      return true;
+    }
+    
+    else {
+      return false;
+    }
+  }
+
   getUrlParams() {
-    if (this.route.snapshot.params['pn']) {
-      this.page = this.route.snapshot.params['pn'];
-    }
+    this.route.queryParamMap.subscribe(params => {
+      const countryParam = params.get('country');
+      const cityParam = params.get('city');
+      const titleParam = params.get('title');
 
-    if (this.route.snapshot.params['ps']) {
-      this.page_size = this.route.snapshot.params['ps'];
-    }
+      if (countryParam) {
+        this.country = countryParam;
+      }
 
-    if (this.route.snapshot.params['sort_by_direction']) {
-      this.sort_by_direction = this.route.snapshot.params['sort_by_direction'];
-    }
+      if (cityParam) {
+        this.city = cityParam;
+      }
 
-    if (this.route.snapshot.params['sort_by_function']) {
-      this.sort_by_function = this.route.snapshot.params['sort_by_function'];
-    }
-
-    if (this.route.snapshot.params['title']) {
-      this.title = this.route.snapshot.params['title'];
-    }
-
-    if (this.route.snapshot.params['country']) {
-      this.country = this.route.snapshot.params['country'];
-    }
-
-    if (this.route.snapshot.params['city']) {
-      this.city = this.route.snapshot.params['city'];
-    }
+      if (titleParam) {
+        this.title = titleParam;
+      }
+    });
   }
 }

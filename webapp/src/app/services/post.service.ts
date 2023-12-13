@@ -2,8 +2,10 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
-import { HttpParamsBuilder } from './HttpParamsBuilder';
-import { Post, remapPost } from './post-card/post';
+import { HttpParamsBuilder } from '../HttpParamsBuilder';
+import { remapComment } from '../post-card/comment';
+import { Post, remapPost } from '../post-card/post';
+import { Comment } from '../post-card/comment'
 
 const BASEURL = "http://127.0.0.1:5000/api/v1.0/posts"
 const baseHeaders = new HttpHeaders().set('content-type', 'content/json');
@@ -61,7 +63,22 @@ export class PostService {
       .pipe(
         map(remapPost)
       );
-    }
+  }
+
+  getCommentsOnPost(postID: string, page: number, page_size: number, sort_by_direction: number): Observable<Comment[]> {
+    const params = new HttpParams()
+      .set('pn', page)
+      .set('ps', page_size)
+      .set('sort_direction', sort_by_direction);
+
+    return this.http.get<Comment[]>(BASEURL + "/" + postID + "/comments", {headers: baseHeaders, params: params})
+    .pipe(map(json => json.map(remapComment)));
+  }
+
+  addCommentToPost(text: string, postID: string) {
+    console.log(BASEURL + "/" + postID + "/comments")
+    return this.http.post(BASEURL + "/" + postID + "/comments", JSON.stringify({"text": text}), { headers: baseHeaders });
+  }
 
   addPost(title: string, coverImage: string, description: string, text: string, cityID: number) {
     console.log("Done");
