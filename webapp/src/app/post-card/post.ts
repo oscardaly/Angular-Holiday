@@ -33,3 +33,14 @@ export function remapPost(post: Post): Post {
         date: new Date(timeStamp).toLocaleDateString('en-uk', { weekday:"long", year:"numeric", month:"short", day:"numeric"})
       };
 }
+
+export interface City {
+    _id: string,
+    city: string,
+    city_ascii: string,
+    country: string,
+    population: string,
+    lat: number,
+    lng: number,
+    id: string
+}

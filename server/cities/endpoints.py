@@ -32,3 +32,19 @@ def get_cities_by_country():
 
     else:
         return make_response(jsonify({ "error" : "Missing form data" }), 404)
+
+
+@cities_blueprint.route(BASE_URL + "/<string:cityName>", methods=["GET"])
+def get_city_by_name(cityName):
+    try:
+        city = config.cities.find_one({'city_ascii' : cityName})
+        city = helpers.parse_city(city)
+        
+        if city is not None:
+            return make_response(jsonify(city), 200)
+
+        else:
+            return make_response(jsonify({ "error" : "City not found" }), 404) 
+    
+    except:
+        return make_response(jsonify({ "error" : "Error when processing request" }), 500)

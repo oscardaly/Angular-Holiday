@@ -80,8 +80,14 @@ export class PostService {
     return this.http.post(BASEURL + "/" + postID + "/comments", JSON.stringify({"text": text}), { headers: baseHeaders });
   }
 
-  addPost(title: string, coverImage: string, description: string, text: string, cityID: number) {
-    console.log("Done");
+  addPost(title: string, coverImage: string, description: string, text: string, cityID: string) {
+    return this.http.post(BASEURL, JSON.stringify({
+      "title": title,
+      "description": description,
+      "text": text,
+      "cityID": cityID,
+      "cover_photo": coverImage
+    }), { headers: baseHeaders });
   }
 
   buildParams(params: GetPostsParams) {

@@ -67,28 +67,31 @@ def get_post():
 @utils.check_for_jwt
 def add_post():
     try:
-        post = helpers.get_post_by_title(config.posts, request.json["title"])
+        data = request.get_json(force=True)
+        post = helpers.get_post_by_title(config.posts, data["title"])
         
         if post is None:
-            city_for_post = helpers.get_city_by_id(config.cities, request.json["cityID"])
+            city_for_post = helpers.get_city_by_id(config.cities, data["cityID"])
 
             if city_for_post:
+                print(3)
                 current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
+                print(4)
                 new_post = {
-                    "title" : request.json["title"],
+                    "title" : data["title"],
                     "author" : {
                         "username" : current_user["username"],
                         "forename" : current_user["forename"],
                         "surname" : current_user["surname"],
                         "profile_picture" : current_user["profile_picture"]
                     },
-                    "cover_photo" : request.json["cover_photo"],
-                    "description" : request.json["description"],
-                    "text" : request.json["text"],
+                    "cover_photo" : data["cover_photo"],
+                    "description" : data["description"],
+                    "text" : data["text"],
                     "comments" : [],
                     "city" : city_for_post
                 }
-
+                print(5)
                 new_post_id = config.posts.insert_one(new_post)
                 new_post_link = "http://localhost:5000" + BASE_URL + "/" + str(new_post_id.inserted_id)
                 return make_response( jsonify({"url": new_post_link} ), 201)
@@ -191,7 +194,7 @@ def add_comment_to_post(id):
     try:
         current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
         post = helpers.get_post_by_id(config.posts, id)
-        print(1)
+
         if post is not None:
             new_comment = {
                 "_id" : ObjectId(),

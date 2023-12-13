@@ -159,3 +159,7 @@ def get_city_by_id(citiesDB, cityID):
 
     except:
         return None
+
+def parse_city(city):
+    city['_id'] = str(city['_id'])    
+    return city
