@@ -39,7 +39,8 @@
     </div>
   </div> 
 
-  <div class="flex flex-row justify-center mt-10 align-center">
+  <div class="flex flex-col justify-center mt-10 align-center">
+    <div class="flex flex-row justify-center">
       <h1 class="text-4xl font-bold tracking-tight sm:text-6xl px-10 text-center">Comments</h1>  
       <button class="btn" (click)="openModal()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
@@ -55,65 +56,17 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
           </svg>
       </label>
-  </div>
+    </div>
+  
 
   <p *ngIf="comments.length == 0" class="flex justify-center m-10">No comments yet!</p>
 
   <div *ngFor="let comment of comments" class="flex justify-center">
-    <app-comment-box [comment]="comment"></app-comment-box>
-  </div>   
-</div>
-
-<!-- <dialog id="commentModal" class="modal">
-  <div class="modal-box">
-    <h3 class="font-bold text-lg">Hello!</h3>
-    <input type="text" placeholder="Type comment here" class="input input-bordered w-full max-w-xs" />
-    <div class="modal-action">
-      <form method="dialog">
-        if there is a button in form, it will close the modal
-        <button class="btn" (click)="closeModal()">Close</button>
-        <button class="btn btn-primary" (click)="addComment()">Add</button>
-      </form>
-    </div>
-  </div>
-</dialog> -->
-
-<!-- <div class="modal-header">
-  <h5 class="modal-title" id="gridModalLabel">Grids in modals</h5>
-  <button
-    type="button"
-    class="btn-close"
-    (click)="modalRef.close()"
-    aria-label="Close"
-  ></button>
-</div>
-<div class="modal-body">
-  <div class="container-fluid bd-example-row">
-    <div class="row">
-      <div class="col-md-4 col-example">.col-md-4</div>
-      <div class="col-md-4 ms-auto col-example">.col-md-4 .ms-auto</div>
-    </div>
-    <div class="row">
-      <div class="col-md-3 ms-auto col-example">.col-md-3 .ms-auto</div>
-      <div class="col-md-2 ms-auto col-example">.col-md-2 .ms-auto</div>
-    </div>
-    <div class="row">
-      <div class="col-md-6 ms-auto col-example">.col-md-6 .ms-auto</div>
-    </div>
-    <div class="row">
-      <div class="col-sm-9 col-example">
-        Level 1: .col-sm-9
-        <div class="row">
-          <div class="col-8 col-sm-6 col-example">Level 2: .col-8 .col-sm-6</div>
-          <div class="col-4 col-sm-6 col-example">Level 2: .col-4 .col-sm-6</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="modalRef.close()">
-    Close
+    <app-comment-box [comment]="comment" (commentDeleted)="getCommentsForPost(postID)" [postID]="postID"></app-comment-box>
+  </div> 
+  
+  <button *ngIf="displayViewMoreButton()" (click)="ViewMorePosts()" class="text-lg font-semibold flex justify-center m-10">
+    View more...
   </button>
-  <button type="button" class="btn btn-primary">Save changes</button>
-</div> -->
+</div>
+</div>

@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { PostService } from '../services/post.service';
 import { Post } from './post';
 
 @Component({
@@ -12,4 +14,18 @@ import { Post } from './post';
 })
 export class PostCardComponent {
   @Input() postCard!: Post
+  @Output() postUpdated = new EventEmitter<void>();
+
+  constructor(private postService: PostService, private toastr: ToastrService) {}
+
+  deletePost() {
+    this.postService.deletePost(this.postCard._id).subscribe(response => {
+      this.showSuccessToast("Post deleted!");
+      this.postUpdated.emit();
+    })
+  }
+
+  showSuccessToast(message: string) {
+    this.toastr.success(message);
+  }
 }

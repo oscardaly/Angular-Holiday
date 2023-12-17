@@ -1,31 +1,31 @@
 <div class="navbar bg-base-100">
-    <div class="flex-1">
-        <a [routerLink]="['/']">
-            <header class="brand-name">
-              <img class="brand-logo" src="favicon.ico" alt="logo" aria-hidden="true" />
-            </header>
-        </a>
-    </div>
+  <div class="flex-1">
+    <a [routerLink]="['/']">
+        <header class="brand-name">
+          <img class="brand-logo" src="favicon.ico" alt="logo" aria-hidden="true" />
+        </header>
+    </a>
+  </div>
 
-    <div class="hidden lg:flex lg:gap-x-12">
-        <a [routerLink]="['gallery']" class="text-sm font-semibold leading-6 text-gray-900">Gallery</a>
-        <a [routerLink]="['add-post']" class="text-sm font-semibold leading-6 text-gray-900">Create Post</a>
-    </div>
+  <div class="hidden lg:flex lg:gap-x-12">
+    <a [routerLink]="['gallery']" class="text-sm font-semibold leading-6 text-gray-900">Gallery</a>
+    <a [routerLink]="['add-post']" class="text-sm font-semibold leading-6 text-gray-900">Create Post</a>
+  </div>
 
-    <div *ngIf="!userLoggedIn()" class="hidden lg:flex lg:flex-1 lg:justify-end">
-        <a href="login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
-    </div>
+  <div *ngIf="!userLoggedIn()" class="hidden lg:flex lg:flex-1 lg:justify-end">
+    <a href="login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+  </div>
 
-    <div *ngIf="userLoggedIn()" class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-          <div class="w-10 rounded-full">
-            <img alt="Tailwind CSS Navbar component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-          </div>
-        </div>
-        <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-          <li><a>Profile</a></li>
-          <li><a>My Posts</a></li>
-          <li><a>Logout</a></li>
-        </ul>
+  <div *ngIf="userLoggedIn()" class="dropdown dropdown-end">
+    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+      <!-- <div *ngIf="currentUser$ | async as currentUser" class="w-10 rounded-full"> -->
+        <img alt="Tailwind CSS Navbar component" src="{{(currentUser$ | async)?.profile_picture}}" />
+      <!-- </div> -->
     </div>
+    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+      <li><a [routerLink]="['profile']">Profile</a></li>
+      <li><a>My Posts</a></li>
+      <li><a (click)="logOut()">Logout</a></li>
+    </ul>
+  </div>
 </div>

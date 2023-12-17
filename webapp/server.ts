@@ -24,23 +24,27 @@ export function app(): express.Express {
     maxAge: '1y'
   }));
 
-  // All regular routes use the Angular engine
-  server.get('*', (req, res, next) => {
-    const { protocol, originalUrl, baseUrl, headers } = req;
+	// All regular routes use the Angular engine
+	server.get('*', (req, res, next) => {
+		const { protocol, originalUrl, baseUrl, headers } = req;
 
-    commonEngine
-      .render({
-        bootstrap,
-        documentFilePath: indexHtml,
-        url: `${protocol}://${headers.host}${originalUrl}`,
-        publicPath: browserDistFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
-      })
-      .then((html) => res.send(html))
-      .catch((err) => next(err));
-  });
+		commonEngine
+			.render({
+				bootstrap,
+				documentFilePath: indexHtml,
+				url: `${protocol}://${headers.host}${originalUrl}`,
+				publicPath: browserDistFolder,
+				providers: [
+					{ provide: APP_BASE_HREF, useValue: baseUrl },
+					{ provide: 'REQUEST', useValue: req },
+					{ provide: 'RESPONSE', useValue: res },
+				],
+			})
+			.then((html) => res.send(html))
+			.catch((err) => next(err));
+	});
 
-  return server;
+	return server;
 }
 
 function run(): void {

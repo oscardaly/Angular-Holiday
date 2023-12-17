@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ToastrService } from 'ngx-toastr';
 import { PostService } from '../services/post.service';
 
 @Component({
@@ -21,17 +22,30 @@ import { PostService } from '../services/post.service';
   templateUrl: './add-comment-dialog.component.html',
   styleUrl: './add-comment-dialog.component.scss'
 })
-export class AddCommentDialogComponent {
-  comment: string = "";
-  
+export class AddCommentDialogComponent {  
+  title: string = "Add Comment";
+  submitButtonText = "Add"
+
   constructor(private postService: PostService,
     public dialogRef: MatDialogRef<AddCommentDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public postID: string
-  ) {}
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    private toastr: ToastrService
+  ) {
+    if (data.comment != "") {
+      this.title = "Edit comment";
+      this.submitButtonText = "Edit"
+    }
+  }
 
   onSubmit() {
-    if (this.comment != "") {
-      this.postService.addCommentToPost(this.comment, this.postID).subscribe(
+    if (this.data.comment != "" && this.submitButtonText == "Edit") {
+      this.postService.editComment(this.data.commentID ?? "", this.data.comment).subscribe(response => {
+        this.showSuccessToast("Comment updated!");
+      });
+    }
+
+    else if (this.data.comment != "" && this.submitButtonText == "Add") {
+      this.postService.addCommentToPost(this.data.comment, this.data.postID).subscribe(
         res => console.log(res)
       );
     }
@@ -40,4 +54,14 @@ export class AddCommentDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
+  showSuccessToast(message: string) {
+    this.toastr.success(message);
+  }
+}
+
+export type DialogData = {
+  comment: string, 
+  commentID?: string,
+  postID: string
 }

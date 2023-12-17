@@ -23,7 +23,8 @@
 <div class="carousel rounded-box relative w-full">
   <div class="carousel-item pl-10" *ngFor="let postCard of posts | async">
     <app-post-card 
-      [postCard]="postCard">
+      [postCard]="postCard"
+      (postUpdated)="getPosts()">
     </app-post-card>
   </div> 
 </div>

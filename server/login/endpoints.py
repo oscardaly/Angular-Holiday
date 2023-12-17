@@ -47,6 +47,7 @@ def login():
 @login_blueprint.route(BASE_URL + "/logout", methods=['GET'])
 @utils.check_for_jwt
 def logout():
+    print("1")
     try:
         token = request.headers['x-access-token']
 

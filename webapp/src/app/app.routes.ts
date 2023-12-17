@@ -4,6 +4,7 @@ import { GalleryComponent } from './gallery/gallery.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ProfileComponent } from './profile/profile.component';
 import { SignupComponent } from './signup/signup.component';
 import { ViewPostComponent } from './view-post/view-post.component';
 
@@ -29,6 +30,11 @@ export const routes: Routes = [
         title: 'Add Post'
     },
     {
+        path: 'edit-post/:id',
+        component: AddPostComponent,
+        title: 'Edit Post'
+    },
+    {
         path: 'login',
         component: LoginComponent,
         title: 'Login'
@@ -37,6 +43,11 @@ export const routes: Routes = [
         path: 'signup',
         component: SignupComponent,
         title: 'Sign Up'
+    },
+    {
+        path: 'profile',
+        component: ProfileComponent,
+        title: 'Profile'
     },
     {
         path: '**',

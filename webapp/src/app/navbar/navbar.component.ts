@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { Observable, tap } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { User } from '../services/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,19 +13,31 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.sass'
 })
+
 export class NavbarComponent {
-  constructor(private authService: AuthService) {
+  currentUser$: Observable<User>;
+
+  constructor(private authService: AuthService, private router: Router, private toastr: ToastrService) {
+    this.currentUser$ = this.authService.getUser();
+  }
+
+  ngOnInit() {
+
   }
 
   userLoggedIn(): boolean {
-    return this.authService.getUser();
+    return this.authService.isUserLoggedIn();
   }
 
-  handleLogin() {
-    // this.auth.loginWithRedirect({
-    //   appState: {
-    //     target: '/gallery',
-    //   },
-    // });
+  logOut() {
+    this.authService.logout()?.subscribe(response => {
+      this.router.navigate(['/']);
+      this.authService.deleteToken();
+      this.showToast("Logged out!");
+    });
   }
+
+  showToast(message: string) {
+    this.toastr.success(message)
+  };
 }

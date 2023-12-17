@@ -70,17 +70,18 @@ def add_user():
 @utils.admin_or_account_owner_required
 def edit_user(username):
     try:
-        hashed_password = bcrypt.hashpw(request.json["password"].encode('utf-8'), bcrypt.gensalt())
+        data = request.get_json(force=True)
+        hashed_password = bcrypt.hashpw(data["password"].encode('utf-8'), bcrypt.gensalt())
         updated_user_details = { 
-            "forename" : request.json["forename"],
-            "surname" : request.json["surname"],
+            "forename" : data["forename"],
+            "surname" : data["surname"],
             "password" : hashed_password,
-            "profile_picture" : request.json["profile_picture"],
-            "username" : request.json["username"]
+            "profile_picture" : data["profile_picture"],
+            "username" : data["username"]
         }
 
         response = config.users.update_one({ "username" : username }, { "$set" : updated_user_details })
-        os.environ["CURRENT_USER"] = request.json["username"]
+        os.environ["CURRENT_USER"] = data["username"]
 
         if response.matched_count == 1:
             del updated_user_details["password"]

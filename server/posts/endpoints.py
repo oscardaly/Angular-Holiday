@@ -231,7 +231,6 @@ def get_comment_by_id(comment_id):
 @utils.admin_or_comment_owner_required
 def edit_comment(comment_id):
     try:
-        print(os.environ["CURRENT_USER"])
         current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
         comment = helpers.get_post_comment_by_id(config.posts, comment_id)
 
@@ -241,7 +240,7 @@ def edit_comment(comment_id):
                 "comments.$.forename" : current_user["forename"],
                 "comments.$.surname" : current_user["surname"],
                 "comments.$.profile_picture" : current_user["profile_picture"],
-                "comments.$.text" : request.json["text"],
+                "comments.$.text" : request.get_json(force=True)["text"],
             }
             
             config.posts.update_one({ "comments._id" : ObjectId(comment_id) }, { "$set" : edited_comment } )
@@ -256,7 +255,7 @@ def edit_comment(comment_id):
          
 
 @posts_blueprint.route(BASE_URL + "/<string:post_id>/comments/<string:comment_id>", methods=["DELETE"])
-@utils.admin_or_comment_owner_required
+@utils.admin_or_comment_owner_required_for_delete
 def delete_comment(post_id, comment_id):
     post = helpers.get_post_by_id(config.posts, post_id)
     comment = helpers.get_post_comment_by_id(config.posts, comment_id)

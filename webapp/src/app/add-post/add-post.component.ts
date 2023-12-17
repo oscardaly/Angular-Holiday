@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
 import { Observable, of } from 'rxjs';
+import { Post } from '../post-card/post';
 import { CityService } from '../services/city.service';
 import { PostService } from '../services/post.service';
 
@@ -17,6 +18,8 @@ import { PostService } from '../services/post.service';
 })
 
 export class AddPostComponent {
+  route: ActivatedRoute = inject(ActivatedRoute);
+
   postForm = new FormGroup({
     title: new FormControl(''),
     coverImage: new FormControl(''),
@@ -31,9 +34,11 @@ export class AddPostComponent {
   countries$: Observable<string[]>; 
   isCitiesFilterDisabled: boolean = true;
   cityID: string = "";
+  title = "Create Post";
 
   constructor(private postService: PostService, private cityService: CityService, private router: Router, private toastr: ToastrService) {
     this.countries$ = this.cityService.getCountries();
+    this.checkForEditFormat();
   }
 
   addPost() {
@@ -46,28 +51,52 @@ export class AddPostComponent {
       this.postForm.value.text ?? '',
       this.cityID ?? ""
     ).subscribe(response => {
-      this.router.navigate(['/']);
+      this.router.navigate(['/gallery']);
       this.showSuccessToast();
     });
   }
 
-checkForCountry() {
-  console.log(this.country);
+  checkForCountry() {
+    if (this.country) {
+      this.cityPlaceholder = "City";
+      this.isCitiesFilterDisabled = false;
+      this.cities$ = this.cityService.getCities(this.country);
+    }
 
-  if (this.country) {
-    this.cityPlaceholder = "City";
-    this.isCitiesFilterDisabled = false;
-    this.cities$ = this.cityService.getCities(this.country);
+    else {
+      this.city = undefined;
+      this.cityPlaceholder = "Please select a country";
+      this.isCitiesFilterDisabled = true;
+    }
   }
 
-  else {
-    this.city = undefined;
-    this.cityPlaceholder = "Please select a country";
-    this.isCitiesFilterDisabled = true;
+  showSuccessToast() {
+    if (this.title == "Add Post") {
+      this.toastr.success("Post created!")
+    }
+    else {
+      this.toastr.success("Post updated!")
+    }
   }
-}
 
-showSuccessToast() {
-  this.toastr.success("Post created!")
-}
+  checkForEditFormat() {
+    const postIDInUrl: string = this.route.snapshot.params['id'];
+
+    if (postIDInUrl) {
+      const postToEdit = this.postService.getPostByID(postIDInUrl);
+      this.useEditPostFormat(postToEdit);
+    }
+  }
+
+  useEditPostFormat(post: Observable<Post>) {
+    post.subscribe(post => {
+      this.postForm.controls["title"].setValue(post.title);
+      this.postForm.controls["coverImage"].setValue(post.cover_photo);
+      this.postForm.controls["description"].setValue(post.description);
+      this.postForm.controls["text"].setValue(post.text);
+      this.country = post.city.country;
+      this.city = post.city.city_ascii;
+      this.title = "Edit Post";
+    })
+  }
 }

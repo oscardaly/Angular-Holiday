@@ -1,1 +1,24 @@
-<p>profile works!</p>
+<div class="flex flex-col justify-center items-center h-screen">
+    <h1>Profile</h1>
+    <form [formGroup]="userForm" (submit)="updateUser()">
+        <label for="forename">Forename</label>
+        <input id="forename" type="text" formControlName="forename" />
+        
+        <label for="surname">Surname</label>
+        <input id="surname" type="text" formControlName="surname" />
+        
+        <label for="username">Username</label>
+        <input id="username" type="text" formControlName="username" />
+        
+        <label for="password">Password</label>
+        <input id="password" type="text" formControlName="password" />
+        
+        <label for="profile_picture">Profile Picture</label>
+        <input id="profile_picture" type="text" formControlName="profile_picture" />
+        
+        <div class="flex flex-row justify-between">
+            <button type="submit" class="primary">Update Details</button>
+            <button (click)="deleteUser()" class="text-red-600">Delete Account</button>
+        </div>
+    </form>
+  </div>

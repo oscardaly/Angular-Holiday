@@ -49,11 +49,8 @@ export class PostService {
     this.postsSubject.next([]);
   }
 
-  remove(postID: number): Observable<any> {
-    return this.http.delete(BASEURL + "/" + postID)
-      .pipe(
-        tap(() => this.refresh())
-    );
+  deletePost(postID: string) {
+    return this.http.delete(BASEURL + "/" + postID, { headers: baseHeaders });
   }
 
   getPostByID(postID: string) {
@@ -87,6 +84,16 @@ export class PostService {
       "text": text,
       "cityID": cityID,
       "cover_photo": coverImage
+    }), { headers: baseHeaders });
+  }
+
+  deleteComment(postID: string, commentID: string) {
+    return this.http.delete(BASEURL + "/" + postID + "/comments/" + commentID, { headers: baseHeaders });
+  }
+
+  editComment(commentID: string, message: string) {
+    return this.http.put(BASEURL + "/comments/" + commentID, JSON.stringify({
+      "text": message,
     }), { headers: baseHeaders });
   }
 

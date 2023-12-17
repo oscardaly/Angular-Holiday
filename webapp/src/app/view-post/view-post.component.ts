@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CommentBoxComponent } from '../comment-box/comment-box.component';
 import { Post } from '../post-card/post';
 import { Comment } from '../post-card/comment';
@@ -23,7 +23,7 @@ export class ViewPostComponent implements OnInit {
   postID: string = "";
   comments: Comment[] = [];
   page: number = 1;
-  page_size: number = 5;
+  page_size: number = 3;
   sort_by_direction: number = 1;
 
   constructor(public postService: PostService, public dialog: MatDialog) {
@@ -33,9 +33,6 @@ export class ViewPostComponent implements OnInit {
   }
 
   ngOnInit() {
-    // const postID: string = this.route.snapshot.params['id'];
-    // this.postService.getPostByID(postID);
-    // .subscribe(post => this.post = post);
   }
 
   getCentre(lat: number, lng: number) {
@@ -57,9 +54,25 @@ export class ViewPostComponent implements OnInit {
     this.getCommentsForPost(this.postID);
   }
 
+  displayViewMoreButton(): boolean {
+    if (this.comments.length > 0 && this.comments.length % 3 == 0) {
+      return true;
+    }
+    
+    else {
+      return false;
+    }
+  }
+
+  ViewMorePosts() {
+    this.page_size += 3;
+    this.getCommentsForPost(this.postID);
+  }
+
+
   openModal() {
     const dialogRef = this.dialog.open(AddCommentDialogComponent, {
-      data: this.postID,
+      data: { comment: "", postID: this.postID},
       height: '400px',
       width: '600px',
     });
