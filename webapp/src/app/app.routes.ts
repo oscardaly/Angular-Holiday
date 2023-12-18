@@ -5,6 +5,8 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProfileComponent } from './profile/profile.component';
+import { adminOrPostOwnerGuard } from './root-guards/admin-or-post-owner.guard';
+import { loggedInGuard } from './root-guards/logged-in.guard';
 import { SignupComponent } from './signup/signup.component';
 import { ViewPostComponent } from './view-post/view-post.component';
 
@@ -12,7 +14,7 @@ export const routes: Routes = [
     {
         path: '',
         component: HomeComponent,
-        title: 'Home Page'
+        title: 'Home'
     },
     {
         path: 'gallery',
@@ -27,12 +29,14 @@ export const routes: Routes = [
     {
         path: 'add-post',
         component: AddPostComponent,
-        title: 'Add Post'
+        title: 'Add Post',
+        canActivate: [loggedInGuard]
     },
     {
         path: 'edit-post/:id',
         component: AddPostComponent,
-        title: 'Edit Post'
+        title: 'Edit Post',
+        canActivate: [adminOrPostOwnerGuard]
     },
     {
         path: 'login',
@@ -47,8 +51,14 @@ export const routes: Routes = [
     {
         path: 'profile',
         component: ProfileComponent,
-        title: 'Profile'
-    },
+        title: 'Profile',
+        canActivate: [loggedInGuard]
+    }, //needs to own the profile
+    // {
+    //     path: 'profile/posts',
+    //     component: MyPostsComponent,
+    //     title: 'My Posts'
+    // }, //needs to be admin or account owner
     {
         path: '**',
         component: PageNotFoundComponent,

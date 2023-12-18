@@ -28,7 +28,7 @@ def get_cities_by_country():
             return make_response(jsonify( data_to_return ), 200)
 
         except:
-            return make_response(jsonify({ "error" : "Cities not found" }), 500)
+            return make_response(jsonify({ "error" : "Cities not found" }), 404)
 
     else:
         return make_response(jsonify({ "error" : "Missing form data" }), 404)

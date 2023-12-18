@@ -4,6 +4,8 @@ import { jwtDecode } from 'jwt-decode';
 import { EMPTY, EmptyError, tap } from 'rxjs';
 import { User, UserService } from './user.service';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 const BASEURL = "http://127.0.0.1:5000/api/v1.0/";
 
@@ -12,7 +14,7 @@ const BASEURL = "http://127.0.0.1:5000/api/v1.0/";
 })
 
 export class AuthService {
-  constructor(private http: HttpClient, private userService: UserService, private cookieService: SsrCookieService) { 
+  constructor(private http: HttpClient, private userService: UserService, private cookieService: SsrCookieService, private toastr: ToastrService, private router: Router) { 
   }
 
   isUserLoggedIn() {
@@ -45,7 +47,14 @@ export class AuthService {
     .set('content-type', 'content/json')
     .set("Authorization", "Basic " + btoa(`${username}:${password}`));
     return this.http.get<string>(BASEURL + "login", { headers: baseHeaders})
-    .subscribe(token => this.cookieService.set('token', JSON.stringify(token), { expires: 120}));
+    .subscribe({
+      next: token => {
+        this.cookieService.set('token', JSON.stringify(token), { expires: 120});
+        this.router.navigate(['/']);
+        this.toastr.success("Logged in!");
+      },
+      error: error => this.toastr.error(error.error.message)
+    });
   }
 
   logout() {

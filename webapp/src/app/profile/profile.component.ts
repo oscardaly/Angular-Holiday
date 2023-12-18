@@ -46,23 +46,29 @@ export class ProfileComponent {
         profile_picture: this.userForm.value.profile_picture ?? ''
       },
         currentUser.username)
-        .subscribe(response => {
-          this.authService.logout();
-          this.authService.login(this.userForm.value.username ?? "", this.userForm.value.password ?? "")
-          this.showSuccessToast("User updated!");
-        })
+        .subscribe({ 
+          next: (response) => {
+            this.authService.logout();
+            this.authService.login(this.userForm.value.username ?? "", this.userForm.value.password ?? "")
+            this.showSuccessToast("User updated!");
+        }, 
+          error: error => this.toastr.error(error.error.error)
+        });
     })
   }
 
   deleteUser() {
     this.user$.subscribe(currentUser => {
       this.userService.deleteUser(currentUser.username)
-        .subscribe(response => {
-          this.authService.logout();
-          this.authService.deleteToken();
-          this.router.navigate(['/']);
-          this.showSuccessToast("Account deleted!");
-        })
+        .subscribe({ 
+          next: (response) => {
+            this.authService.logout();
+            this.authService.deleteToken();
+            this.router.navigate(['/']);
+            this.showSuccessToast("Account deleted!");
+        }, 
+          error: error => this.toastr.error(error.error.error)
+        });
     })
   }
 

@@ -1,4 +1,5 @@
 from bson import ObjectId
+import bcrypt
 
 def get_users_from_mongo(users):
     data_to_return = []
@@ -19,6 +20,7 @@ def get_user_from_mongo_by_username(users, username):
         user['password'] = ''
 
     return user
+
 
 def update_user_object_for_comment_subdocument(user):
     new_user = {}

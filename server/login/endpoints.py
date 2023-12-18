@@ -47,7 +47,6 @@ def login():
 @login_blueprint.route(BASE_URL + "/logout", methods=['GET'])
 @utils.check_for_jwt
 def logout():
-    print("1")
     try:
         token = request.headers['x-access-token']
 
@@ -63,4 +62,4 @@ def logout():
             return make_response(jsonify({'error' : 'No token found'}), 404)
 
     except:
-        return make_response(jsonify( { "error" : "Missing form data" } ), 404)
+        return make_response(jsonify( { "error" : "Error logging out" } ), 404)

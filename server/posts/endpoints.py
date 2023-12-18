@@ -67,16 +67,14 @@ def get_post():
 @utils.check_for_jwt
 def add_post():
     try:
-        data = request.get_json(force=True)
+        data = request.get_json()
         post = helpers.get_post_by_title(config.posts, data["title"])
         
         if post is None:
             city_for_post = helpers.get_city_by_id(config.cities, data["cityID"])
 
             if city_for_post:
-                print(3)
                 current_user = helpers.get_user_from_mongo_by_username(config.users, os.environ["CURRENT_USER"])
-                print(4)
                 new_post = {
                     "title" : data["title"],
                     "author" : {
@@ -91,7 +89,7 @@ def add_post():
                     "comments" : [],
                     "city" : city_for_post
                 }
-                print(5)
+
                 new_post_id = config.posts.insert_one(new_post)
                 new_post_link = "http://localhost:5000" + BASE_URL + "/" + str(new_post_id.inserted_id)
                 return make_response( jsonify({"url": new_post_link} ), 201)
@@ -137,7 +135,7 @@ def edit_post(id):
                     config.posts.update_one({ "_id" : ObjectId(id) }, updated_post)
                     updated_post_link = "http://localhost:5000" + BASE_URL + "/" + id
 
-                    return make_response( jsonify({"url": updated_post_link} ), 200)
+                    return make_response( jsonify({"url": updated_post_link} ), 201)
                 
                 else:
                     return make_response(jsonify({ "error" : "City not found" }), 404)
@@ -158,7 +156,7 @@ def delete_post(id):
 
     if post is not None:
         config.posts.delete_one( { "_id" : ObjectId(id) } )
-        return make_response( jsonify( {} ), 204)
+        return make_response( jsonify( {} ), 200)
 
     else:
         return make_response(jsonify({ "error" : "Post not found" }), 404)
@@ -202,9 +200,9 @@ def add_comment_to_post(id):
                 "forename" : current_user["forename"],
                 "surname" : current_user["surname"],
                 "profile_picture" : current_user["profile_picture"],
-                "text" : request.get_json(force=True)["text"]
+                "text" : request.get_json()["text"]
             }
-            print(2)
+
             config.posts.update_one( { "_id" : ObjectId(id) }, { "$push" : { "comments" : new_comment } } )
             new_comment_link = BASE_URL + "/" + id + "/comments/" + str(new_comment['_id'])
             return make_response( jsonify({ "url" : new_comment_link } ), 201 )
@@ -240,7 +238,7 @@ def edit_comment(comment_id):
                 "comments.$.forename" : current_user["forename"],
                 "comments.$.surname" : current_user["surname"],
                 "comments.$.profile_picture" : current_user["profile_picture"],
-                "comments.$.text" : request.get_json(force=True)["text"],
+                "comments.$.text" : request.get_json()["text"],
             }
             
             config.posts.update_one({ "comments._id" : ObjectId(comment_id) }, { "$set" : edited_comment } )
@@ -274,3 +272,14 @@ def delete_comment(post_id, comment_id):
 
     else:
         return make_response(jsonify( { "error" : "Post not found" } ), 404)    
+
+
+@posts_blueprint.route(BASE_URL + "/check-access/<string:id>", methods=["GET"])
+@utils.admin_or_post_owner_required_boolean
+def check_for_post_owner_or_admin(id):
+    if id:
+        return make_response( jsonify( True ), 200)
+    
+    else:
+        return make_response(jsonify( False ), 401)
+ 

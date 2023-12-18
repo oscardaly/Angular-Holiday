@@ -30,10 +30,13 @@ export class NavbarComponent {
   }
 
   logOut() {
-    this.authService.logout()?.subscribe(response => {
-      this.router.navigate(['/']);
-      this.authService.deleteToken();
-      this.showToast("Logged out!");
+    this.authService.logout()?.subscribe({ 
+      next: (response) => {
+        this.router.navigate(['/']);
+        this.authService.deleteToken();
+        this.showToast("Logged out!");
+    }, 
+      error: error => this.toastr.error(error.error.error)
     });
   }
 

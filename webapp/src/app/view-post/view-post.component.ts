@@ -9,6 +9,8 @@ import { Comment } from '../post-card/comment';
 import { PostService } from '../services/post.service';
 import { MatDialog } from '@angular/material/dialog'
 import { AddCommentDialogComponent } from '../add-comment-dialog/add-comment-dialog.component';
+import { AuthService } from '../services/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-view-post',
@@ -26,7 +28,7 @@ export class ViewPostComponent implements OnInit {
   page_size: number = 3;
   sort_by_direction: number = 1;
 
-  constructor(public postService: PostService, public dialog: MatDialog) {
+  constructor(public postService: PostService, public dialog: MatDialog, private authService: AuthService, private toastr: ToastrService) {
     this.postID = this.route.snapshot.params['id'];
     this.post$ = this.postService.getPostByID(this.postID);
     this.getCommentsForPost(this.postID); 
@@ -71,15 +73,21 @@ export class ViewPostComponent implements OnInit {
 
 
   openModal() {
-    const dialogRef = this.dialog.open(AddCommentDialogComponent, {
-      data: { comment: "", postID: this.postID},
-      height: '400px',
-      width: '600px',
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      this.getCommentsForPost(this.postID);
-    });
+    if (this.authService.isUserLoggedIn()) {
+      const dialogRef = this.dialog.open(AddCommentDialogComponent, {
+        data: { comment: "", postID: this.postID},
+        height: '400px',
+        width: '600px',
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        this.getCommentsForPost(this.postID);
+      });
+    }
+    
+    else {
+      this.toastr.error("You must be logged in to add a comment!")
+    }
   }
 }
 

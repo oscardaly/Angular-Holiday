@@ -46,13 +46,17 @@ export class AddPostComponent {
 
     this.postService.addPost(
       this.postForm.value.title ?? '',
-      this.postForm.value.coverImage ?? '',
+      // this.postForm.value.coverImage ?? '',
+      "../../assets/background.jpg",
       this.postForm.value.description ?? '',
       this.postForm.value.text ?? '',
       this.cityID ?? ""
-    ).subscribe(response => {
-      this.router.navigate(['/gallery']);
-      this.showSuccessToast();
+    ).subscribe({ 
+      next: (response) => {
+        this.router.navigate(['/gallery']);
+        this.showSuccessToast();
+    }, 
+      error: error => this.toastr.error(error.error.error)
     });
   }
 
@@ -71,7 +75,7 @@ export class AddPostComponent {
   }
 
   showSuccessToast() {
-    if (this.title == "Add Post") {
+    if (this.title == "Create Post") {
       this.toastr.success("Post created!")
     }
     else {

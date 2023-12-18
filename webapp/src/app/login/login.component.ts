@@ -23,9 +23,6 @@ export class LoginComponent {
   handleLogin() {
     if (this.logInForm.value.username && this.logInForm.value.password) {
       this.authService.login(this.logInForm.value.username ?? "", this.logInForm.value.password ?? "");
-      this.logInForm.reset(),
-      this.router.navigate(['/']);
-      this.showSuccessToast();
     }
   }
   

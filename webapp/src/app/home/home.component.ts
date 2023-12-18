@@ -26,6 +26,6 @@ export class HomeComponent implements OnInit {
   }
 
   getPosts() {
-    this.posts = this.postService.getPostsWithParams({pn: 1, ps: 5, sort_by_direction: 1, sort_by_function: "_id"});
+    this.posts = this.postService.getPostsWithParams({pn: 1, ps: 5, sort_by_direction: -1, sort_by_function: "_id"});
   }
 }

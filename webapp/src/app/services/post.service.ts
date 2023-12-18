@@ -8,7 +8,7 @@ import { Post, remapPost } from '../post-card/post';
 import { Comment } from '../post-card/comment'
 
 const BASEURL = "http://127.0.0.1:5000/api/v1.0/posts"
-const baseHeaders = new HttpHeaders().set('content-type', 'content/json');
+const baseHeaders = new HttpHeaders().set('content-type', 'application/json;indent=2');
 
 @Injectable({providedIn: 'root'})
 export class PostService {
@@ -95,6 +95,10 @@ export class PostService {
     return this.http.put(BASEURL + "/comments/" + commentID, JSON.stringify({
       "text": message,
     }), { headers: baseHeaders });
+  }
+
+  checkAccessToPost(postID: string) {
+    return this.http.get<boolean>(BASEURL + "/check-access/" + postID, { headers: baseHeaders });
   }
 
   buildParams(params: GetPostsParams) {

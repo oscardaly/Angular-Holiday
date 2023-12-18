@@ -23,9 +23,12 @@ export class CommentBoxComponent {
   }
 
   deleteComment() {
-    this.postService.deleteComment(this.postID, this.comment._id).subscribe(response => {
-      this.showSuccessToast("Comment deleted!");
-      this.commentDeleted.emit();
+    this.postService.deleteComment(this.postID, this.comment._id).subscribe({ 
+      next: (response) => {
+        this.showSuccessToast("Comment deleted!");
+        this.commentDeleted.emit();
+    }, 
+      error: error => this.toastr.error(error.error.error)
     });
   }
 

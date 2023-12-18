@@ -26,7 +26,7 @@ export class GalleryComponent {
   cityPlaceholder: string = "Please select a country"
   page: number = 1;
   page_size: number = 6;
-  sort_by_direction: number = 1;
+  sort_by_direction: number = -1;
   sort_by_function: string = "_id";
   sortFunctions: string[] = ["Date", "Title", "City", "Country", "Comments"]
   cities$: Observable<string[]> = of([]);

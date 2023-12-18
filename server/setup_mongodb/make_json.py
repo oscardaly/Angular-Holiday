@@ -12,9 +12,9 @@ def main():
     citiesDB = db.cities
 
     setup_user_db(usersDB)
-    # setup_posts_db(postsDB)
-    # setup_cities_db(citiesDB)
-    # add_cities_to_default_posts(postsDB, citiesDB)
+    setup_posts_db(postsDB)
+    setup_cities_db(citiesDB)
+    add_cities_to_default_posts(postsDB, citiesDB)
 
 
 def setup_user_db(usersDB):
@@ -66,7 +66,7 @@ def add_cities_to_default_posts(postsDB, citiesDB):
         num_processed = num_processed + 1
 
         if num_processed % 10 == 0:
-            print(str(num_processed) + " cities processed")
+            print(str(num_processed) + " posts processed")
 
 
 if __name__ == "__main__":

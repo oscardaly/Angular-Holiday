@@ -30,11 +30,15 @@ export class SignupComponent {
       forename: this.signUpForm.value.forename ?? '',
       surname: this.signUpForm.value.surname ?? '',
       password: this.signUpForm.value.password ?? '',
-      profile_picture: this.signUpForm.value.profile_picture ?? ''
-    }).subscribe(response => {
-      this.signUpForm.reset()
-      this.router.navigate(['/']);
-      this.showSuccessToast();
+      // profile_picture: this.signUpForm.value.profile_picture ?? ''
+      profile_picture: "../../assets/users/default.svg"
+    }).subscribe({ 
+      next: (response) => {
+        this.signUpForm.reset()
+        this.router.navigate(['/']);
+        this.showSuccessToast();
+    }, 
+      error: error => this.toastr.error(error.error.error)
     });
   }
 

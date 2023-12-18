@@ -39,15 +39,17 @@ export class AddCommentDialogComponent {
 
   onSubmit() {
     if (this.data.comment != "" && this.submitButtonText == "Edit") {
-      this.postService.editComment(this.data.commentID ?? "", this.data.comment).subscribe(response => {
-        this.showSuccessToast("Comment updated!");
+      this.postService.editComment(this.data.commentID ?? "", this.data.comment).subscribe({ 
+        next: (response) => this.showSuccessToast("Comment updated!"), 
+        error: error => this.toastr.error(error.error.error)
       });
     }
 
     else if (this.data.comment != "" && this.submitButtonText == "Add") {
-      this.postService.addCommentToPost(this.data.comment, this.data.postID).subscribe(
-        res => console.log(res)
-      );
+      this.postService.addCommentToPost(this.data.comment, this.data.postID).subscribe({
+        next: (response) => this.showSuccessToast("Comment added!"), 
+        error: error => this.toastr.error(error.error.error)
+      });
     }
   }
 

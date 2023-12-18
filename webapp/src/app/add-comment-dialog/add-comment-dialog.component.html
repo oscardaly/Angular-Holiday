@@ -7,6 +7,6 @@
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">Cancel</button>
-  <button mat-button (click)="onSubmit()" [mat-dialog-close]="data.comment" cdkFocusInitial>{{submitButtonText}}</button>
+  <button class="text-white mx-5" mat-button (click)="onNoClick()">Cancel</button>
+  <button class="text-white" mat-button (click)="onSubmit()" [mat-dialog-close]="data.comment" cdkFocusInitial>{{submitButtonText}}</button>
 </div>

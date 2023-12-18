@@ -1,6 +1,6 @@
 <div class="flex flex-col justify-center items-center h-screen">
   <h1>{{title}}</h1>
-  <form [formGroup]="postForm" (submit)="addPost()">
+  <form [formGroup]="postForm" (submit)="addPost()" class="flex flex-col justify-center">
       <label for="title">Title</label>
       <input id="title" type="text" formControlName="title" />
       
@@ -14,11 +14,11 @@
       <input id="text" type="text" formControlName="text" />
       
       <label for="country">Country</label>
-      <ng-select id="country" [(ngModel)]="country" [ngModelOptions]="{standalone: true}" (clear)="checkForCountry()" (close)="checkForCountry()" placeholder="Country" [items]="countries$ | async"></ng-select>
+      <ng-select id="country" [(ngModel)]="country" [ngModelOptions]="{standalone: true}" (clear)="checkForCountry()" (close)="checkForCountry()" placeholder="Country" [items]="countries$ | async" class="mb-5"></ng-select>
       
       <label for="city">City</label>
       <ng-select id="city" [(ngModel)]="city" [ngModelOptions]="{standalone: true}" (clear)="checkForCountry()" [disabled]="isCitiesFilterDisabled" placeholder="{{cityPlaceholder}}" [items]="cities$ | async"></ng-select>
     
-      <button type="submit" class="primary">{{title}}</button>
+      <button type="submit" class="btn btn-ghost my-8">{{title}}</button>
   </form>
 </div>

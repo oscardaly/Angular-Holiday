@@ -1,18 +1,18 @@
 default_users = [
     {
         "username": "odaly",
-        "forename": "oscar",
-        "surname": "daly",
+        "forename": "Oscar",
+        "surname": "Daly",
         "password" : "password",
-        "profile_picture": "../../assets/users/odaly.jpg",     
+        "profile_picture": "../../assets/users/odaly.png",     
         "admin" : False
     },
     {
         "username" : "admin",
         "forename" : "admin",
-        "surname" : "surname",
+        "surname" : "admin",
         "password" : "admin",
-        "profile_picture" : "",
+        "profile_picture" : "../../assets/users/default.svg",
         "admin" : True       
     },
     {
